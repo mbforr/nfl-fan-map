@@ -1,0 +1,32 @@
+node_modules/
+dist/
+.env
+.env.local
+.env.*.local
+
+# Raw inputs — PRIVATE
+# Survey exports at the repo root (the originals the user dropped in)
+data.csv
+new_data.csv
+data/responses.csv
+data/counties_us.geojson
+data/provinces_ca.geojson
+data/states_mx.geojson
+data/states_de.geojson
+data/states_au.geojson
+data/nations_gb.geojson
+data/divisions_ca.geojson
+data/countries_world.geojson
+data/zip_county_crosswalk.csv
+data/zip_county_crosswalk.txt
+data/zcta_centroids.geojson
+data/_raw/
+
+# Tooling temp dirs
+**/_tmp_*/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+.claude
