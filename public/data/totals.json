@@ -1,118 +1,118 @@
 {
   "meta": {
-    "total_rows": 14372,
-    "valid_rows": 13351,
-    "skipped_bad_country": 5,
-    "skipped_no_region": 1016,
+    "total_rows": 15795,
+    "valid_rows": 14717,
+    "skipped_bad_country": 6,
+    "skipped_no_region": 1072,
     "skipped_breakdown": {
-      "badCountry": 5,
-      "usNoZip": 864,
-      "usBadZip": 124,
+      "badCountry": 6,
+      "usNoZip": 906,
+      "usBadZip": 128,
       "caNoLevel": 6,
-      "mxNoState": 15,
-      "deNoState": 4,
-      "auNoState": 3,
+      "mxNoState": 22,
+      "deNoState": 6,
+      "auNoState": 4,
       "other": 0
     },
-    "unique_regions": 1838,
-    "a_responses": 13351,
+    "unique_regions": 1903,
+    "a_responses": 14717,
     "a_categories": 32,
     "by_country": {
-      "US": 9817,
-      "CA": 934,
-      "GB": 544,
-      "RU": 6,
-      "CZ": 25,
-      "AU": 362,
-      "TW": 8,
-      "DE": 302,
-      "IE": 97,
-      "NL": 60,
-      "IN": 20,
-      "BR": 106,
-      "FR": 43,
-      "IL": 38,
-      "DK": 35,
-      "TR": 11,
-      "PL": 20,
-      "KE": 1,
+      "US": 10520,
+      "CA": 1056,
+      "GB": 642,
+      "RU": 7,
+      "CZ": 29,
+      "AU": 426,
+      "TW": 12,
+      "DE": 384,
+      "IE": 104,
+      "NL": 72,
+      "IN": 26,
+      "BR": 129,
+      "FR": 60,
+      "IL": 50,
+      "DK": 44,
+      "TR": 15,
+      "PL": 25,
+      "KE": 2,
       "DO": 3,
       "KP": 3,
-      "SE": 37,
+      "SE": 44,
       "CO": 14,
-      "NZ": 76,
-      "BE": 24,
+      "NZ": 87,
+      "BE": 30,
       "KN": 2,
-      "ES": 23,
-      "AT": 29,
-      "CH": 39,
-      "IT": 40,
-      "CR": 8,
+      "ES": 38,
+      "AT": 38,
+      "CH": 49,
+      "IT": 50,
+      "CR": 11,
       "TD": 1,
       "GH": 1,
-      "AR": 17,
-      "MX": 147,
-      "CL": 15,
+      "AR": 19,
+      "MX": 191,
+      "CL": 16,
       "NR": 2,
       "ZW": 2,
       "MA": 7,
       "SI": 1,
-      "BA": 5,
-      "SK": 5,
+      "BA": 6,
+      "SK": 10,
       "UY": 2,
-      "HU": 17,
-      "ZA": 11,
+      "HU": 20,
+      "ZA": 12,
       "PA": 4,
-      "PT": 13,
-      "SA": 6,
-      "EC": 1,
-      "VE": 3,
+      "PT": 18,
+      "SA": 7,
+      "EC": 2,
+      "VE": 4,
       "ER": 2,
-      "JP": 20,
+      "JP": 24,
       "LK": 2,
-      "EE": 1,
+      "EE": 2,
       "BZ": 2,
-      "IS": 9,
-      "IQ": 5,
-      "CN": 17,
+      "IS": 11,
+      "IQ": 6,
+      "CN": 19,
       "PE": 3,
       "JO": 7,
       "KR": 11,
-      "GT": 4,
+      "GT": 6,
       "UA": 2,
       "MY": 7,
       "BB": 1,
       "TH": 5,
-      "GR": 4,
+      "GR": 5,
       "IR": 2,
-      "KG": 1,
-      "NO": 10,
-      "ID": 125,
-      "SG": 7,
+      "KG": 2,
+      "NO": 12,
+      "ID": 129,
+      "SG": 9,
       "HN": 1,
       "KW": 3,
       "FJ": 1,
       "SR": 1,
       "ME": 1,
       "KZ": 1,
-      "PH": 10,
+      "PH": 14,
       "JM": 2,
       "LI": 2,
       "CY": 3,
       "TG": 1,
       "FM": 1,
-      "LB": 5,
+      "LB": 7,
       "CM": 1,
-      "LU": 2,
+      "LU": 4,
       "BD": 1,
       "SV": 5,
-      "FI": 14,
-      "GE": 3,
-      "AE": 7,
+      "FI": 17,
+      "GE": 4,
+      "AE": 12,
       "QA": 2,
       "PK": 4,
-      "RO": 7,
-      "RS": 5,
+      "RO": 9,
+      "RS": 8,
       "MN": 2,
       "BG": 2,
       "YE": 1,
@@ -122,147 +122,154 @@
       "AM": 1,
       "EG": 2,
       "PY": 3,
-      "AL": 2,
+      "AL": 3,
       "NP": 1,
       "PG": 1,
-      "HR": 3,
+      "HR": 4,
       "BO": 1,
       "CU": 4,
       "MU": 1,
       "BF": 1,
       "BN": 1,
-      "VN": 2,
-      "SY": 1
+      "VN": 3,
+      "SY": 1,
+      "LT": 1,
+      "ET": 2,
+      "MT": 2,
+      "MM": 1,
+      "AO": 1,
+      "BS": 1,
+      "SS": 1
     }
   },
   "a": [
     {
       "short_name": "Green Bay Packers",
-      "count": 867
+      "count": 964
     },
     {
       "short_name": "Seattle Seahawks",
-      "count": 849
+      "count": 954
     },
     {
       "short_name": "Philadelphia Eagles",
-      "count": 757
+      "count": 831
     },
     {
       "short_name": "New England Patriots",
-      "count": 739
+      "count": 800
     },
     {
       "short_name": "Buffalo Bills",
-      "count": 722
+      "count": 787
     },
     {
       "short_name": "Chicago Bears",
-      "count": 680
+      "count": 733
     },
     {
       "short_name": "Pittsburgh Steelers",
-      "count": 623
+      "count": 688
     },
     {
       "short_name": "San Francisco 49ers",
-      "count": 580
+      "count": 652
     },
     {
       "short_name": "Denver Broncos",
-      "count": 572
-    },
-    {
-      "short_name": "Detroit Lions",
-      "count": 523
+      "count": 638
     },
     {
       "short_name": "Minnesota Vikings",
-      "count": 520
+      "count": 575
+    },
+    {
+      "short_name": "Detroit Lions",
+      "count": 560
     },
     {
       "short_name": "Dallas Cowboys",
-      "count": 501
+      "count": 543
     },
     {
       "short_name": "Baltimore Ravens",
-      "count": 474
+      "count": 522
     },
     {
       "short_name": "New York Giants",
-      "count": 461
+      "count": 512
     },
     {
       "short_name": "Kansas City Chiefs",
-      "count": 411
+      "count": 447
     },
     {
       "short_name": "Cincinnati Bengals",
-      "count": 350
+      "count": 379
     },
     {
       "short_name": "Carolina Panthers",
-      "count": 325
+      "count": 365
     },
     {
       "short_name": "New Orleans Saints",
-      "count": 288
-    },
-    {
-      "short_name": "Los Angeles Rams",
-      "count": 288
-    },
-    {
-      "short_name": "Cleveland Browns",
-      "count": 283
+      "count": 320
     },
     {
       "short_name": "Miami Dolphins",
-      "count": 282
+      "count": 318
     },
     {
-      "short_name": "Washington Commanders",
-      "count": 268
+      "short_name": "Cleveland Browns",
+      "count": 308
+    },
+    {
+      "short_name": "Los Angeles Rams",
+      "count": 307
     },
     {
       "short_name": "Houston Texans",
-      "count": 266
+      "count": 300
     },
     {
-      "short_name": "Las Vegas Raiders",
-      "count": 259
+      "short_name": "Washington Commanders",
+      "count": 291
     },
     {
       "short_name": "Los Angeles Chargers",
-      "count": 257
+      "count": 288
+    },
+    {
+      "short_name": "Las Vegas Raiders",
+      "count": 286
     },
     {
       "short_name": "Atlanta Falcons",
-      "count": 215
+      "count": 245
     },
     {
       "short_name": "New York Jets",
-      "count": 190
-    },
-    {
-      "short_name": "Jacksonville Jaguars",
-      "count": 186
+      "count": 211
     },
     {
       "short_name": "Tampa Bay Buccaneers",
-      "count": 181
+      "count": 209
+    },
+    {
+      "short_name": "Jacksonville Jaguars",
+      "count": 209
     },
     {
       "short_name": "Indianapolis Colts",
-      "count": 168
+      "count": 181
     },
     {
       "short_name": "Arizona Cardinals",
-      "count": 144
+      "count": 163
     },
     {
       "short_name": "Tennessee Titans",
-      "count": 122
+      "count": 131
     }
   ]
 }
