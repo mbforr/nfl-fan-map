@@ -8,6 +8,7 @@ dist/
 # Survey exports at the repo root (the originals the user dropped in)
 data.csv
 new_data.csv
+new_data_*.csv
 data/responses.csv
 data/counties_us.geojson
 data/provinces_ca.geojson
