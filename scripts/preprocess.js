@@ -28,8 +28,10 @@ const STATES_PATH = path.join(DATA, "states_mx.geojson");
 const STATES_DE_PATH = path.join(DATA, "states_de.geojson");
 const STATES_AU_PATH = path.join(DATA, "states_au.geojson");
 const NATIONS_GB_PATH = path.join(DATA, "nations_gb.geojson");
+const DIVISIONS_GB_PATH = path.join(DATA, "divisions_gb.geojson");
 const COUNTRIES_PATH = path.join(DATA, "countries_world.geojson");
 const CA_GEONAMES_PATH = path.join(DATA, "_raw/CA.txt");
+const GB_GEONAMES_PATH = path.join(DATA, "_raw/GB.txt");
 
 const COL_TEAM = "Which NFL team are you a fan of?";
 const COL_COUNTRY = "Country";
@@ -396,9 +398,9 @@ const CA_PROVINCE_TO_GN = {
   ON: "08", PE: "09", QC: "10", SK: "11", YT: "12", NT: "13", NU: "14",
 };
 
-function loadGeoNamesCA() {
-  if (!fs.existsSync(CA_GEONAMES_PATH)) return null;
-  const txt = fs.readFileSync(CA_GEONAMES_PATH, "utf8");
+function loadGeoNames(filePath) {
+  if (!fs.existsSync(filePath)) return null;
+  const txt = fs.readFileSync(filePath, "utf8");
   const idx = new Map(); // lowercased name → array of { lat, lng, admin1, pop }
   const lines = txt.split("\n");
   for (const line of lines) {
@@ -412,7 +414,7 @@ function loadGeoNamesCA() {
     const lng = parseFloat(cols[5]);
     const admin1 = cols[10];
     const pop = parseInt(cols[14], 10) || 0;
-    const entry = { lat, lng, admin1, pop };
+    const entry = { name, asciiname: ascii, lat, lng, admin1, pop };
     for (const n of new Set([name, ascii, ...alts.split(",").filter(Boolean)])) {
       const key = norm(n);
       if (!key) continue;
@@ -424,20 +426,20 @@ function loadGeoNamesCA() {
   return idx;
 }
 
-function lookupCACity(idx, cityRaw, provinceCode) {
+function lookupCity(idx, cityRaw, preferredAdmin = null) {
   if (!idx) return null;
   const key = norm(cityRaw);
   if (!key) return null;
   const cands = idx.get(key);
   if (!cands || !cands.length) return null;
-  const wantAdmin = provinceCode ? CA_PROVINCE_TO_GN[provinceCode] : null;
   let best = null;
-  for (const c of cands) {
-    if (wantAdmin && c.admin1 !== wantAdmin) continue;
-    if (!best || c.pop > best.pop) best = c;
+  if (preferredAdmin) {
+    for (const c of cands) {
+      if (c.admin1 !== preferredAdmin) continue;
+      if (!best || c.pop > best.pop) best = c;
+    }
   }
-  // No province match? Fall back to the most populous candidate so misspelled
-  // or missing provinces still resolve to *something* plausible.
+  // No admin match (or none requested): fall back to most-populous candidate.
   if (!best) {
     for (const c of cands) if (!best || c.pop > best.pop) best = c;
   }
@@ -659,21 +661,46 @@ function main() {
   fs.mkdirSync(OUT, { recursive: true });
   const responses = readResponses();
   const zipToFips = loadZipCountyCrosswalk();
-  const caCities = loadGeoNamesCA();
+  const caCities = loadGeoNames(CA_GEONAMES_PATH);
+  const gbCities = loadGeoNames(GB_GEONAMES_PATH);
 
   // Pre-index CA L2 polygons by bbox so we can PIP-test efficiently.
   const caDivisions = readGeoJSON(DIVISIONS_CA_PATH);
   const caDivIndex = caDivisions.features.map((f) => ({ f, bbox: bbox(f.geometry) }));
 
+  // GB L2 divisions, but only England — Scotland/Wales/NI stay at L1.
+  const gbDivisions = readGeoJSON(DIVISIONS_GB_PATH);
+  const gbDivIndex = gbDivisions.features
+    .filter((f) => f.properties.NAME_1 === "England")
+    .map((f) => ({ f, bbox: bbox(f.geometry) }));
+
   function resolveCALevel2(row) {
     if (!caCities) return null;
     const provCode = normalizeCAProvince(row[COL_REGION]);
-    const hit = lookupCACity(caCities, row[COL_CITY], provCode);
+    const hit = lookupCity(caCities, row[COL_CITY], provCode ? CA_PROVINCE_TO_GN[provCode] : null);
     if (!hit) return null;
     const pt = [hit.lng, hit.lat];
     for (const { f, bbox: bb } of caDivIndex) {
       if (pt[0] < bb[0] || pt[0] > bb[2] || pt[1] < bb[1] || pt[1] > bb[3]) continue;
       if (pointInGeometry(pt, f.geometry)) return f.properties.GID_2;
+    }
+    return null;
+  }
+
+  function resolveEnglandLevel2(row) {
+    if (!gbCities) return null;
+    // City field for UK respondents is the strongest signal. The survey's
+    // region field often has the same name (Surrey, Kent, …); both go
+    // through the city index since GeoNames includes places-of-counties.
+    const candidates = [row[COL_CITY], row[COL_REGION]];
+    for (const raw of candidates) {
+      const hit = lookupCity(gbCities, raw);
+      if (!hit) continue;
+      const pt = [hit.lng, hit.lat];
+      for (const { f, bbox: bb } of gbDivIndex) {
+        if (pt[0] < bb[0] || pt[0] > bb[2] || pt[1] < bb[1] || pt[1] > bb[3]) continue;
+        if (pointInGeometry(pt, f.geometry)) return f.properties.GID_2;
+      }
     }
     return null;
   }
@@ -735,8 +762,17 @@ function main() {
       id = s;
     } else if (country === "GB") {
       const nation = normalizeGBNation(row[COL_REGION], row[COL_CITY]);
-      level = "gb_nation";
-      id = nation;
+      if (nation === "ENG") {
+        // Try L2 (unitary authority / county) by city PIP. If that fails,
+        // fall back to L1 England so the response still appears.
+        const divGid = resolveEnglandLevel2(row);
+        if (divGid) { level = "gb_division"; id = divGid; }
+        else { level = "gb_nation"; id = nation; }
+      } else {
+        // Scotland/Wales/NI stay at L1 — too few responses to split further.
+        level = "gb_nation";
+        id = nation;
+      }
     } else {
       level = "country";
       id = country;
@@ -857,6 +893,55 @@ function main() {
     if (hasc && hasc !== "NA") gadmAUByHASC.set(hasc, f);
   }
 
+  // ----- Join: GB L2 English unitary authorities / counties -----
+  const gadmGBDivByGID = new Map();
+  for (const f of gbDivisions.features) {
+    const gid = f.properties.GID_2;
+    if (gid) gadmGBDivByGID.set(gid, f);
+  }
+
+  // GADM ships 85-ish English L2 features with NAME_2 = "NA". Rather than
+  // maintain a hand-built HASC → label table (error-prone — easy to swap
+  // Greater London with Gateshead), derive the popup label from GeoNames:
+  // find the most-populous populated place inside each polygon and use that.
+  // A few HASC codes name a county that's better known than its largest town
+  // (Watford-as-Hertfordshire, High-Wycombe-as-Buckinghamshire). Verified by
+  // bbox-center sanity check at write time; safer to keep this small.
+  const GB_HASC_OVERRIDES = {
+    "GB.HT": "Hertfordshire",
+    "GB.BU": "Buckinghamshire",
+    "GB.GL": "Greater London",
+  };
+  const gbDivisionLabelCache = new Map();
+  function gbDivisionLabel(f) {
+    const gid = f.properties.GID_2;
+    if (gbDivisionLabelCache.has(gid)) return gbDivisionLabelCache.get(gid);
+    const name2 = f.properties.NAME_2;
+    const override = GB_HASC_OVERRIDES[f.properties.HASC_2];
+    let label = override || null;
+    if (!label && name2 && name2 !== "NA") label = gadmStateName(name2);
+    else if (!label && gbCities) {
+      const b = bbox(f.geometry);
+      let best = null;
+      // Walk the GeoNames index; pick the most-populous PPL whose point falls
+      // inside this polygon. It's O(N*M) but only runs ~85 times for the few
+      // English L2 features that surface in the output.
+      for (const arr of gbCities.values()) {
+        for (const c of arr) {
+          if (!c.lat || !c.lng) continue;
+          if (c.lng < b[0] || c.lng > b[2] || c.lat < b[1] || c.lat > b[3]) continue;
+          if (best && c.pop <= best.pop) continue;
+          if (!pointInGeometry([c.lng, c.lat], f.geometry)) continue;
+          best = c;
+        }
+      }
+      if (best) label = best.name || best.asciiname;
+    }
+    if (!label) label = f.properties.HASC_2 || gid;
+    gbDivisionLabelCache.set(gid, label);
+    return label;
+  }
+
   // ----- Join: GB L1 constituent countries -----
   // GADM's England has GID_1=GBR.1_1 but NAME_1=NA; the other three are clean.
   const gbNations = readGeoJSON(NATIONS_GB_PATH);
@@ -869,11 +954,36 @@ function main() {
   }
 
   // ----- Join: countries (rest of world only) -----
+  // GADM ships some countries (India, China, Pakistan, …) as multiple L0
+  // features representing disputed territorial claims. The downloader writes
+  // them as separate entries, so a naive Map.set overwrites everything but
+  // the *last* sub-feature — typically a tiny border patch. Merge all
+  // features for the same ISO_A2 into a single MultiPolygon.
   const countries = readGeoJSON(COUNTRIES_PATH);
   const gadmCountryByISO = new Map();
+  function pushPolys(g, out) {
+    if (!g) return;
+    if (g.type === "Polygon") out.push(g.coordinates);
+    else if (g.type === "MultiPolygon") for (const p of g.coordinates) out.push(p);
+  }
   for (const f of countries.features) {
     const a2 = f.properties.ISO_A2;
-    if (a2) gadmCountryByISO.set(a2, f);
+    if (!a2) continue;
+    const existing = gadmCountryByISO.get(a2);
+    if (!existing) {
+      gadmCountryByISO.set(a2, {
+        type: "Feature",
+        geometry: f.geometry.type === "MultiPolygon"
+          ? f.geometry
+          : { type: "MultiPolygon", coordinates: [f.geometry.coordinates] },
+        properties: f.properties,
+      });
+    } else {
+      const polys = [];
+      pushPolys(existing.geometry, polys);
+      pushPolys(f.geometry, polys);
+      existing.geometry = { type: "MultiPolygon", coordinates: polys };
+    }
   }
 
   // Build outputs
@@ -900,7 +1010,7 @@ function main() {
     // sub-national polygons get a tighter one.
     const tol =
       agg.level === "country" ? 0.03 :
-      agg.level === "county" || agg.level === "division" ? 0.005 :
+      agg.level === "county" || agg.level === "division" || agg.level === "gb_division" ? 0.005 :
       0.01;
     polygons.features.push({ type: "Feature", geometry: quantizeGeometry(feature.geometry, 3, tol), properties: props });
     const c = featureCentroid(feature);
@@ -951,6 +1061,10 @@ function main() {
     } else if (agg.level === "gb_nation") {
       const f = gadmGBByCode.get(agg.id);
       emit(agg, f, GB_LABEL[agg.id] || agg.id);
+    } else if (agg.level === "gb_division") {
+      const f = gadmGBDivByGID.get(agg.id);
+      const label = f ? `${gbDivisionLabel(f)}, England` : agg.id;
+      emit(agg, f, label);
     } else if (agg.level === "country") {
       const f = gadmCountryByISO.get(agg.id);
       const iso2obj = iso.whereAlpha2(agg.id);
@@ -972,8 +1086,9 @@ function main() {
     gb_nation: 1,
     de_state: 1,
     au_state: 1,
-    state: 1,        // MX states
-    division: 2,
+    state: 1,           // MX states
+    division: 2,        // CA census divisions
+    gb_division: 2,     // English unitary authorities / counties
     county: 2,
   };
   polygons.features.sort(
