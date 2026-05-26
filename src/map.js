@@ -342,8 +342,13 @@ export function setBasemap(map, basemapKey, rebuild) {
 
 // ---------------------------------------------------------------------
 // Click popups
+//
+// `getState` is a callback (not a value) so the handler reads the latest UI
+// state at click time, without re-binding on every selection change.
+// Expected shape: { group, selectedTeam, faceoffActive, faceoffA, faceoffB,
+//                   colorOf: (teamName) => string }
 
-export function bindInteractions(map, getGroup) {
+export function bindInteractions(map, getState) {
   const interactiveLayers = [LAYER_FILL, LAYER_CIRCLE, LAYER_POIS_CIRCLE];
   let popup = null;
 
@@ -358,33 +363,109 @@ export function bindInteractions(map, getGroup) {
       const f = e.features?.[0];
       if (!f) return;
       if (popup) popup.remove();
+      const html = layerId === LAYER_POIS_CIRCLE
+        ? poiPopupHTML(f.properties)
+        : popupHTML(f.properties, getState());
       popup = new mapboxgl.Popup({ closeButton: true, maxWidth: "280px" })
         .setLngLat(e.lngLat)
-        .setHTML(layerId === LAYER_POIS_CIRCLE ? poiPopupHTML(f.properties) : popupHTML(f.properties, getGroup()))
+        .setHTML(html)
         .addTo(map);
     });
   }
 }
 
-function popupHTML(props, group) {
-  const counts = props[`${group}_counts`] || {};
-  const obj = typeof counts === "string" ? JSON.parse(counts) : counts;
-  const entries = Object.entries(obj).sort((a, b) => b[1] - a[1]);
+function readCounts(props, group) {
+  const raw = props[`${group}_counts`] || {};
+  return typeof raw === "string" ? JSON.parse(raw) : raw;
+}
+
+function swatch(color) {
+  return `<span class="inline-block h-2.5 w-2.5 rounded-sm align-middle" style="background:${color || "#9ca3af"}"></span>`;
+}
+
+function popupHTML(props, state) {
+  const { group = "a", selectedTeam, faceoffActive, faceoffA, faceoffB, colorOf } = state || {};
+  const counts = readCounts(props, group);
+  const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
   const total = Number(props.total) || entries.reduce((s, [, n]) => s + n, 0);
-  const top3 = entries.slice(0, 3);
   const region = props.region || "—";
-  const rows = top3
-    .map(([team, n]) => {
-      const pct = total ? ((n / total) * 100).toFixed(0) : "0";
-      return `<div class="flex justify-between gap-2"><span class="truncate">${escapeHTML(team)}</span><span class="tabular-nums text-gray-600">${n} (${pct}%)</span></div>`;
-    })
-    .join("");
+  const header = `
+    <div class="font-semibold mb-1">${escapeHTML(region)}</div>
+    <div class="text-xs text-gray-500 mb-2">${total} response${total === 1 ? "" : "s"}</div>`;
+
+  // Face-off mode wins priority over single-team selection.
+  if (faceoffActive && faceoffA && faceoffB) {
+    return `<div class="text-sm">${header}${faceoffSection(faceoffA, faceoffB, counts, total, colorOf)}</div>`;
+  }
+  if (selectedTeam) {
+    return `<div class="text-sm">${header}${selectedTeamSection(selectedTeam, entries, total, colorOf)}</div>`;
+  }
+  return `<div class="text-sm">${header}${defaultSection(entries, total, colorOf)}</div>`;
+}
+
+function defaultSection(entries, total, colorOf) {
+  const rows = entries.slice(0, 3).map(([team, n]) => {
+    const pct = total ? ((n / total) * 100).toFixed(0) : "0";
+    return `<div class="flex items-center justify-between gap-2">
+        <span class="flex items-center gap-1.5 truncate">${swatch(colorOf?.(team))}<span class="truncate">${escapeHTML(team)}</span></span>
+        <span class="tabular-nums text-gray-600">${n} (${pct}%)</span>
+      </div>`;
+  }).join("");
+  return `<div class="space-y-1 text-xs">${rows}</div>`;
+}
+
+function selectedTeamSection(team, entries, total, colorOf) {
+  // Rank: 1-indexed position of the team after sorting by count descending.
+  // Ties resolve to the lower (better) rank for visual clarity.
+  const rankIdx = entries.findIndex(([t]) => t === team);
+  const count = rankIdx >= 0 ? entries[rankIdx][1] : 0;
+  const teams = entries.length;
+  let rank = "—";
+  if (rankIdx >= 0) {
+    let r = 1;
+    for (let i = 0; i < rankIdx; i++) if (entries[i][1] > count) r += 1;
+    rank = r;
+  }
+  const pct = total ? ((count / total) * 100).toFixed(0) : "0";
+  const presence = count > 0
+    ? `<span class="font-semibold tabular-nums">${count}</span> response${count === 1 ? "" : "s"} <span class="text-gray-500">(${pct}%)</span>`
+    : `<span class="text-gray-500">no responses here</span>`;
+  const rankLine = count > 0
+    ? `Ranked <span class="font-medium">#${rank}</span> of ${teams} team${teams === 1 ? "" : "s"} in this region`
+    : "";
   return `
-    <div class="text-sm">
-      <div class="font-semibold mb-1">${escapeHTML(region)}</div>
-      <div class="text-xs text-gray-500 mb-2">${total} response${total === 1 ? "" : "s"}</div>
-      <div class="space-y-1 text-xs">${rows}</div>
-    </div>`;
+    <div class="flex items-center gap-1.5 text-xs mb-1">
+      ${swatch(colorOf?.(team))}<span class="font-medium">${escapeHTML(team)}</span>
+    </div>
+    <div class="text-xs">${presence}</div>
+    ${rankLine ? `<div class="text-xs text-gray-600 mt-0.5">${rankLine}</div>` : ""}`;
+}
+
+function faceoffSection(a, b, counts, total, colorOf) {
+  const ac = Number(counts[a]) || 0;
+  const bc = Number(counts[b]) || 0;
+  const pair = ac + bc;
+  const fmt = (n, color) =>
+    `<div class="flex items-center justify-between gap-2">
+       <span class="flex items-center gap-1.5 truncate">${swatch(color)}<span class="truncate">${escapeHTML(n.team)}</span>${n.leads ? ` <span class="ml-1 rounded px-1 text-[9px] font-semibold uppercase tracking-wide text-white" style="background:${color || "#6b7280"}">leads</span>` : ""}</span>
+       <span class="tabular-nums text-gray-700">${n.count} <span class="text-gray-500">(${n.pct}%)</span></span>
+     </div>`;
+  // Pct is against the *region total* so it's comparable to the default and
+  // selected-team popups. Add a "head-to-head" line below for the A-vs-B
+  // share so the matchup story is also visible.
+  const aPct = total ? ((ac / total) * 100).toFixed(0) : "0";
+  const bPct = total ? ((bc / total) * 100).toFixed(0) : "0";
+  const verdict = pair === 0
+    ? `<div class="text-xs text-gray-500 mt-1">Neither team has responses in this region.</div>`
+    : ac === bc
+      ? `<div class="text-xs text-gray-600 mt-1">Tied head-to-head (${ac}–${bc})</div>`
+      : `<div class="text-xs text-gray-600 mt-1">Head-to-head: <span class="font-medium">${ac}–${bc}</span> (${Math.round((Math.max(ac,bc)/pair)*100)}% lead)</div>`;
+  return `
+    <div class="space-y-1 text-xs">
+      ${fmt({ team: a, count: ac, pct: aPct, leads: ac > bc }, colorOf?.(a))}
+      ${fmt({ team: b, count: bc, pct: bPct, leads: bc > ac }, colorOf?.(b))}
+    </div>
+    ${verdict}`;
 }
 
 function poiPopupHTML(props) {

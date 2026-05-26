@@ -22,6 +22,16 @@ export default function App() {
   const mapRef = useRef(null);
   const dataRef = useRef({ polygons: null, centroids: null, categories: [], totals: null });
   const groupRef = useRef(GROUP);
+  // Latest UI state for the click-popup handler. Refs so bindInteractions'
+  // closure reads the fresh value at click time without rebinding handlers.
+  const popupStateRef = useRef({
+    group: GROUP,
+    selectedTeam: null,
+    faceoffActive: false,
+    faceoffA: null,
+    faceoffB: null,
+    colorOf: () => null,
+  });
 
   const [categories, setCategories] = useState([]);
   const [totals, setTotals] = useState({ meta: null, a: [] });
@@ -84,7 +94,7 @@ export default function App() {
           setPois(map, buildPoisFC(cats, tot.a));
           applyDominant(map, cats, GROUP);
           applyViewMode(map, "polygons");
-          bindInteractions(map, () => groupRef.current);
+          bindInteractions(map, () => popupStateRef.current);
           setReady(true);
         });
       } catch (e) {
@@ -139,6 +149,23 @@ export default function App() {
     selectedTeamMeta,
   ]);
 
+  // Keep the popup-state ref in sync so the bound click handler reads fresh
+  // values without rebinding on every selection change.
+  useEffect(() => {
+    const colorOf = (name) => {
+      const c = categories.find((x) => x.short_name === name);
+      return c?.primary_color || null;
+    };
+    popupStateRef.current = {
+      group: GROUP,
+      selectedTeam,
+      faceoffActive: isFaceoff,
+      faceoffA,
+      faceoffB,
+      colorOf,
+    };
+  }, [categories, selectedTeam, isFaceoff, faceoffA, faceoffB]);
+
   // View mode effect
   useEffect(() => {
     if (!ready) return;
@@ -167,7 +194,7 @@ export default function App() {
         applyDominant(m, cats, GROUP);
       }
       applyViewMode(m, viewMode);
-      bindInteractions(m, () => groupRef.current);
+      bindInteractions(m, () => popupStateRef.current);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [basemap]);
