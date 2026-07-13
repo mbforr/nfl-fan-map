@@ -1,25 +1,29 @@
 {
   "meta": {
     "total_rows": 29081,
-    "valid_rows": 27323,
+    "valid_rows": 28820,
     "skipped_bad_country": 9,
-    "skipped_no_region": 1749,
+    "skipped_no_region": 252,
     "skipped_breakdown": {
       "badCountry": 9,
-      "usNoZip": 1464,
-      "usBadZip": 217,
+      "usNoZip": 162,
+      "usBadZip": 22,
       "caNoLevel": 6,
       "mxNoState": 45,
       "deNoState": 9,
       "auNoState": 8,
       "other": 0
     },
-    "unique_regions": 2367,
-    "a_responses": 27323,
+    "recovered_us": {
+      "byCity": 1492,
+      "byEmbeddedZip": 5
+    },
+    "unique_regions": 2395,
+    "a_responses": 28820,
     "a_categories": 32,
     "by_country": {
       "AU": 620,
-      "US": 20566,
+      "US": 22063,
       "CA": 1714,
       "BR": 238,
       "IT": 95,
@@ -169,131 +173,131 @@
   "a": [
     {
       "short_name": "Green Bay Packers",
-      "count": 3413
+      "count": 3569
     },
     {
       "short_name": "Buffalo Bills",
-      "count": 2000
+      "count": 2093
     },
     {
       "short_name": "Pittsburgh Steelers",
-      "count": 1718
+      "count": 1808
     },
     {
       "short_name": "Seattle Seahawks",
-      "count": 1408
+      "count": 1484
     },
     {
       "short_name": "Philadelphia Eagles",
-      "count": 1360
+      "count": 1432
     },
     {
       "short_name": "New England Patriots",
-      "count": 1244
+      "count": 1315
     },
     {
       "short_name": "Chicago Bears",
-      "count": 1170
+      "count": 1262
     },
     {
       "short_name": "Denver Broncos",
-      "count": 1041
+      "count": 1104
     },
     {
       "short_name": "San Francisco 49ers",
-      "count": 1022
+      "count": 1070
     },
     {
       "short_name": "Detroit Lions",
-      "count": 935
+      "count": 987
     },
     {
       "short_name": "Minnesota Vikings",
-      "count": 929
+      "count": 970
     },
     {
       "short_name": "Cincinnati Bengals",
-      "count": 878
+      "count": 920
     },
     {
       "short_name": "Dallas Cowboys",
-      "count": 837
+      "count": 888
     },
     {
       "short_name": "New York Giants",
-      "count": 825
+      "count": 869
     },
     {
       "short_name": "Baltimore Ravens",
-      "count": 810
+      "count": 856
     },
     {
       "short_name": "Kansas City Chiefs",
-      "count": 693
+      "count": 722
     },
     {
       "short_name": "Miami Dolphins",
-      "count": 624
+      "count": 651
     },
     {
       "short_name": "Las Vegas Raiders",
-      "count": 570
+      "count": 612
     },
     {
       "short_name": "Carolina Panthers",
-      "count": 560
+      "count": 604
     },
     {
       "short_name": "Washington Commanders",
-      "count": 533
-    },
-    {
-      "short_name": "New York Jets",
-      "count": 521
+      "count": 579
     },
     {
       "short_name": "New Orleans Saints",
-      "count": 517
+      "count": 556
+    },
+    {
+      "short_name": "New York Jets",
+      "count": 543
     },
     {
       "short_name": "Cleveland Browns",
-      "count": 499
+      "count": 527
     },
     {
       "short_name": "Los Angeles Rams",
-      "count": 479
+      "count": 507
     },
     {
       "short_name": "Los Angeles Chargers",
-      "count": 465
+      "count": 496
     },
     {
       "short_name": "Houston Texans",
-      "count": 444
+      "count": 473
     },
     {
       "short_name": "Atlanta Falcons",
-      "count": 381
+      "count": 414
     },
     {
       "short_name": "Jacksonville Jaguars",
-      "count": 330
+      "count": 347
     },
     {
       "short_name": "Tampa Bay Buccaneers",
-      "count": 329
+      "count": 339
     },
     {
       "short_name": "Indianapolis Colts",
-      "count": 316
+      "count": 328
     },
     {
       "short_name": "Arizona Cardinals",
-      "count": 249
+      "count": 262
     },
     {
       "short_name": "Tennessee Titans",
-      "count": 223
+      "count": 233
     }
   ]
 }

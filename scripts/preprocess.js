@@ -32,6 +32,7 @@ const DIVISIONS_GB_PATH = path.join(DATA, "divisions_gb.geojson");
 const COUNTRIES_PATH = path.join(DATA, "countries_world.geojson");
 const CA_GEONAMES_PATH = path.join(DATA, "_raw/CA.txt");
 const GB_GEONAMES_PATH = path.join(DATA, "_raw/GB.txt");
+const US_GEONAMES_PATH = path.join(DATA, "_raw/US.txt");
 
 const COL_TEAM = "Which NFL team are you a fan of?";
 const COL_COUNTRY = "Country";
@@ -69,6 +70,45 @@ const STATE_FIPS_TO_USPS = {
   "47": "TN", "48": "TX", "49": "UT", "50": "VT", "51": "VA", "53": "WA",
   "54": "WV", "55": "WI", "56": "WY",
 };
+
+const USPS_TO_STATE_FIPS = Object.fromEntries(
+  Object.entries(STATE_FIPS_TO_USPS).map(([fips, usps]) => [usps, fips]));
+const USPS_SET = new Set(Object.values(STATE_FIPS_TO_USPS));
+const STATE_NAME_TO_USPS = Object.fromEntries(
+  Object.entries(FIPS_TO_STATE).map(([fips, name]) =>
+    [name.toLowerCase(), STATE_FIPS_TO_USPS[fips]]));
+// Common free-text abbreviations the survey produced (beyond full name / USPS).
+const US_STATE_ALIASES = {
+  "calif": "CA", "cali": "CA", "penn": "PA", "penna": "PA", "mass": "MA",
+  "tex": "TX", "fla": "FL", "ill": "IL", "conn": "CT", "wash": "WA",
+  "washington dc": "DC", "washington, dc": "DC", "d.c.": "DC", "dc": "DC",
+};
+
+// Free-text US state → 2-letter USPS. Handles full names, USPS codes, "D.C.",
+// trailing punctuation/whitespace, and a few common abbreviations. Returns null
+// when nothing resolves (row is then counted as unresolvable).
+function normalizeUSState(raw) {
+  if (!raw) return null;
+  let t = String(raw).normalize("NFD").replace(/\p{Diacritic}/gu, "")
+    .trim().replace(/\s+/g, " ");
+  if (!t) return null;
+  const up = t.toUpperCase();
+  if (up.length === 2 && USPS_SET.has(up)) return up;
+  const low = t.toLowerCase().replace(/\.$/, "");
+  if (US_STATE_ALIASES[low]) return US_STATE_ALIASES[low];
+  if (STATE_NAME_TO_USPS[low]) return STATE_NAME_TO_USPS[low];
+  if (low.includes("washington") && /\bd\.?c\.?\b/.test(low)) return "DC";
+  return null;
+}
+
+// Pull a bare 5-digit ZIP out of a messy postal field, e.g.
+// "Current: 23188, growing up: 23508" → "23188". Not adjacent to other digits
+// so we don't grab 5 of a 9-digit string's tail.
+function salvageEmbeddedZip(raw) {
+  if (!raw) return null;
+  const m = String(raw).match(/(?<!\d)(\d{5})(?!\d)/);
+  return m ? m[1] : null;
+}
 
 // ---------------------------------------------------------------------
 // Country normalization (free-text → ISO-2)
@@ -449,8 +489,9 @@ function loadGeoNames(filePath) {
     const lat = parseFloat(cols[4]);
     const lng = parseFloat(cols[5]);
     const admin1 = cols[10];
+    const admin2 = cols[11];        // US: 3-digit county FIPS (unused for CA/GB)
     const pop = parseInt(cols[14], 10) || 0;
-    const entry = { name, asciiname: ascii, lat, lng, admin1, pop };
+    const entry = { name, asciiname: ascii, lat, lng, admin1, admin2, pop };
     for (const n of new Set([name, ascii, ...alts.split(",").filter(Boolean)])) {
       const key = norm(n);
       if (!key) continue;
@@ -700,6 +741,7 @@ function main() {
   const cityToCountyFips = loadIndependentCityRemap();
   const caCities = loadGeoNames(CA_GEONAMES_PATH);
   const gbCities = loadGeoNames(GB_GEONAMES_PATH);
+  const usCities = loadGeoNames(US_GEONAMES_PATH);
 
   // Pre-index CA L2 polygons by bbox so we can PIP-test efficiently.
   const caDivisions = readGeoJSON(DIVISIONS_CA_PATH);
@@ -722,6 +764,21 @@ function main() {
       if (pointInGeometry(pt, f.geometry)) return f.properties.GID_2;
     }
     return null;
+  }
+
+  // US fallback for rows with no usable ZIP: city + state → county FIPS via the
+  // GeoNames gazetteer (admin1 = USPS state, admin2 = 3-digit county FIPS). The
+  // state must match the resolved city's state (no cross-state guessing), which
+  // disambiguates the many like-named towns (Nashville TN vs Nashville NC …).
+  function resolveUSCountyByCity(row) {
+    if (!usCities) return null;
+    const st = normalizeUSState(row[COL_REGION]);
+    if (!st) return null;
+    const hit = lookupCity(usCities, row[COL_CITY], st);
+    if (!hit || hit.admin1 !== st || !hit.admin2) return null;
+    const sf = USPS_TO_STATE_FIPS[st];
+    if (!sf) return null;
+    return sf + String(hit.admin2).padStart(3, "0");
   }
 
   function resolveEnglandLevel2(row) {
@@ -753,6 +810,7 @@ function main() {
     auNoState: 0,
     other: 0,
   };
+  const recovered = { byCity: 0, byEmbeddedZip: 0 }; // US rows saved from the drop pile
   const byCountry = {};
   let validRows = 0;
   let teamCounts = {};
@@ -764,10 +822,19 @@ function main() {
     let level = null;
     let id = null;
     if (country === "US") {
-      const zip = padZip(row[COL_ZIP]);
-      if (!zip) { skipped.usNoZip += 1; continue; }
-      const fips = zipToFips.get(zip);
-      if (!fips) { skipped.usBadZip += 1; continue; }
+      // 1) ZIP as given, then a ZIP salvaged from a messy postal field.
+      const zip = padZip(row[COL_ZIP]) || salvageEmbeddedZip(row[COL_ZIP]);
+      let fips = zip ? zipToFips.get(zip) || null : null;
+      if (fips && !padZip(row[COL_ZIP])) recovered.byEmbeddedZip += 1;
+      // 2) Fallback: city + state → county via the gazetteer.
+      if (!fips) {
+        fips = resolveUSCountyByCity(row);
+        if (fips) recovered.byCity += 1;
+      }
+      if (!fips) {
+        if (!zip) skipped.usNoZip += 1; else skipped.usBadZip += 1;
+        continue;
+      }
       level = "county";
       id = cityToCountyFips.get(fips) || fips; // fold independent cities into their county
     } else if (country === "CA") {
@@ -1156,6 +1223,7 @@ function main() {
         skipped.auNoState +
         skipped.other,
       skipped_breakdown: skipped,
+      recovered_us: recovered,
       unique_regions: uniqueRegions,
       a_responses: validRows,
       a_categories: aTotals.length,
@@ -1171,6 +1239,7 @@ function main() {
   console.log(`Preprocess complete.`);
   console.log(`  rows: ${totalRows}, valid: ${validRows}, dropped: ${totalRows - validRows}`);
   console.log(`  skipped:`, skipped);
+  console.log(`  recovered US (city+state / embedded zip):`, recovered);
   console.log(`  regions: ${uniqueRegions} (polygons: ${polygons.features.length}, centroids: ${centroids.features.length})`);
   console.log(`  unjoined aggregates: ${unjoined}`);
   if (unjoined && process.env.VERBOSE) {
