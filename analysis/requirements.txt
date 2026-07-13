@@ -1,0 +1,13 @@
+# NFL Fan Map — analysis layer (Python 3.12)
+# Read-only consumers of public/data/* plus optional user-supplied files in analysis/data/.
+pandas>=2.0
+numpy>=1.24
+geopandas>=0.14
+shapely>=2.0
+scipy>=1.11
+libpysal>=4.9
+esda>=2.5
+# Network/geocoding deps — only needed for the file-gated scrapers (tasks 08-10).
+requests>=2.31
+beautifulsoup4>=4.12
+geopy>=2.4

@@ -382,6 +382,42 @@ function loadZipCountyCrosswalk() {
   return out;
 }
 
+// Independent cities (Baltimore, St. Louis, and Virginia's ~38) are separate
+// FIPS from a same-named county but GADM ships only ONE "Baltimore" / "Roanoke"
+// / "St. Louis" L2 polygon. Because normCountyName strips both "County" and
+// " city", the city FIPS and county FIPS collide on the same GADM feature and
+// emit as two overlapping same-label polygons. Coalesce each independent-city
+// FIPS into its same-named county FIPS so they aggregate as one region.
+// Derived from the crosswalk (no hardcoded FIPS): within a state, any group of
+// FIPS sharing a normalized county name is a name-collision; the canonical id
+// is the entry NOT ending in " city" (the actual county/parish/borough).
+function loadIndependentCityRemap() {
+  const lines = fs.readFileSync(CROSSWALK_PATH, "utf8").split(/\r?\n/);
+  const byKey = new Map(); // `${stateFips}|${countyKey}` → [{ fips, namelsad }]
+  const seen = new Set();
+  for (let i = 1; i < lines.length; i++) {
+    const cols = lines[i].split("|");
+    const fips = cols[9];
+    const namelsad = cols[10];
+    if (!fips || seen.has(fips)) continue;
+    seen.add(fips);
+    const ck = normCountyName(namelsad);
+    if (!ck) continue;
+    const key = `${fips.slice(0, 2)}|${ck}`;
+    if (!byKey.has(key)) byKey.set(key, []);
+    byKey.get(key).push({ fips, namelsad });
+  }
+  const remap = new Map(); // cityFips → countyFips
+  for (const entries of byKey.values()) {
+    if (entries.length < 2) continue;
+    const county = entries.find((e) => !/\scity$/.test(e.namelsad)) || entries[0];
+    for (const e of entries) {
+      if (e.fips !== county.fips) remap.set(e.fips, county.fips);
+    }
+  }
+  return remap;
+}
+
 function padZip(s) {
   if (!s) return null;
   const m = String(s).replace(/\s+/g, "").match(/^(\d{3,5})/);
@@ -661,6 +697,7 @@ function main() {
   fs.mkdirSync(OUT, { recursive: true });
   const responses = readResponses();
   const zipToFips = loadZipCountyCrosswalk();
+  const cityToCountyFips = loadIndependentCityRemap();
   const caCities = loadGeoNames(CA_GEONAMES_PATH);
   const gbCities = loadGeoNames(GB_GEONAMES_PATH);
 
@@ -732,7 +769,7 @@ function main() {
       const fips = zipToFips.get(zip);
       if (!fips) { skipped.usBadZip += 1; continue; }
       level = "county";
-      id = fips;
+      id = cityToCountyFips.get(fips) || fips; // fold independent cities into their county
     } else if (country === "CA") {
       // L2 first (city → census division via PIP). Fall back to L1 (province
       // by name) if city geocoding fails so we don't drop CA respondents.

@@ -24,6 +24,13 @@ data/zip_county_crosswalk.txt
 data/zcta_centroids.geojson
 data/_raw/
 
+# Analysis layer — regenerable outputs + user-supplied private inputs
+analysis/output/
+analysis/data/
+analysis/**/*.log
+__pycache__/
+*.pyc
+
 # Tooling temp dirs
 **/_tmp_*/
 
