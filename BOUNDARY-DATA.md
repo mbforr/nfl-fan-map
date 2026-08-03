@@ -41,13 +41,38 @@ carried in its `level` property.
 | **MX** | state | `states_mx.geojson` (L1) | `ISO_1`, with `NAME_1`→ISO fallback map | `NAME_1` |
 | **DE** | state | `states_de.geojson` (L1) | `HASC_1` (e.g. `DE.BW`) | `NAME_1` |
 | **AU** | state | `states_au.geojson` (L1) | `HASC_1` | `NAME_1` |
-| **GB** | nation + division | `nations_gb.geojson` (L1) + `divisions_gb.geojson` (L2) | `GID_1` code (ENG/NIR/SCO/WLS); England subdivides to L2 by point-in-polygon | `NAME_1` / `NAME_2` (+ HASC overrides) |
+| **ES** | autonomous community | `states_es.geojson` (L1) | `HASC_1` (e.g. `ES.MD`) | `ES_LABEL` table (GADM `NAME_1` is concatenated) |
+| **GB** | nation | `nations_gb.geojson` (L1) | `GID_1` code (ENG/NIR/SCO/WLS) | `GB_LABEL` table |
 | **everyone else** | country | `countries_world.geojson` (L0) | `ISO_A2` | `NAME` |
 
 US is the only county-level tier. The GADM files ship many `NAME = "NA"`
-placeholders (notably England L2 and Québec) — the pipeline works around these
-with HASC fallbacks and a hand-built name→ISO map; preserve that logic if you
-extend the joins.
+placeholders (notably Québec) — the pipeline works around these with HASC
+fallbacks and a hand-built name→ISO map; preserve that logic if you extend the
+joins.
+
+### Sub-national response threshold (non-US)
+
+Outside the US, a sub-national boundary is only drawn if it clears
+**`SUBNAT_MIN` (>30) responses**; sparser regions **roll up** to the next-coarser
+level, cascading to the country:
+
+- CA census division → province → country
+- CA province / DE Bundesland / AU state → country
+
+The rolled-up remainder is drawn as the **country polygon** (label = country
+name), painted *under* the qualifying sub-national polygons — the same layering
+the app already uses for CA provinces beneath census divisions (see
+`LEVEL_PAINT_ORDER`). CA is excluded from `countries_world.geojson` (it ships as
+an L1 tier), so its country outline is **synthesized** by merging its province
+features (`synthCountry`).
+
+**Exceptions — always shown in full, no threshold, no whole-country polygon:**
+
+- **GB** uses its four constituent **nations** (England / Scotland / Wales /
+  Northern Ireland); English L2 divisions are no longer used, and there is no
+  aggregate United-Kingdom boundary — every nation stands on its own.
+- **MX** shows all states (`state` never rolls up).
+- **ES** shows all 17 autonomous communities (`es_state` never rolls up).
 
 ---
 
@@ -81,7 +106,7 @@ CC_2                    census/local code ("NA" for US)
 ### GADM Level-1 files (state/province granularity)
 
 `provinces_ca.geojson`, `states_mx.geojson`, `states_de.geojson`,
-`states_au.geojson`, `nations_gb.geojson` — shared schema:
+`states_au.geojson`, `states_es.geojson`, `nations_gb.geojson` — shared schema:
 
 | File | Features | Size | Serves |
 |---|---|---|---|
@@ -89,6 +114,7 @@ CC_2                    census/local code ("NA" for US)
 | `states_mx.geojson` | 32 | 1.52 MB | MX states |
 | `states_de.geojson` | 16 | 0.55 MB | DE Bundesländer |
 | `states_au.geojson` | 11 | 2.41 MB | AU states/territories |
+| `states_es.geojson` | 18 | 0.53 MB | ES autonomous communities (17 + Ceuta/Melilla), from `gadm41_ESP_1` |
 | `nations_gb.geojson` | 5 | 0.97 MB | GB constituent nations |
 
 **L1 property schema:**

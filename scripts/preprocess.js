@@ -8,6 +8,10 @@
 //   US  → county (via ZCTA→county crosswalk, joined to GADM USA L2 by state + name)
 //   CA  → province (GADM CAN L1, joined by ISO_1)
 //   MX  → state    (GADM MEX L1, joined by ISO_1)
+//   DE  → Bundesland          (GADM DEU L1, joined by HASC_1)
+//   AU  → state/territory     (GADM AUS L1, joined by HASC_1)
+//   ES  → autonomous community (GADM ESP L1, joined by HASC_1)
+//   GB  → constituent country / English L2 division
 //   *   → country  (per-country GADM L0 merged in countries_world.geojson)
 
 import fs from "node:fs";
@@ -27,6 +31,7 @@ const DIVISIONS_CA_PATH = path.join(DATA, "divisions_ca.geojson");
 const STATES_PATH = path.join(DATA, "states_mx.geojson");
 const STATES_DE_PATH = path.join(DATA, "states_de.geojson");
 const STATES_AU_PATH = path.join(DATA, "states_au.geojson");
+const STATES_ES_PATH = path.join(DATA, "states_es.geojson");
 const NATIONS_GB_PATH = path.join(DATA, "nations_gb.geojson");
 const DIVISIONS_GB_PATH = path.join(DATA, "divisions_gb.geojson");
 const COUNTRIES_PATH = path.join(DATA, "countries_world.geojson");
@@ -338,6 +343,109 @@ function normalizeAUState(s) {
   if (!k) return null;
   if (AU_STATE[k]) return AU_STATE[k];
   for (const [re, code] of AU_SUBSTRING) if (re.test(k)) return code;
+  return null;
+}
+
+// ---------------------------------------------------------------------
+// Spain autonomous communities (17 + Ceuta/Melilla). Values are GADM
+// HASC_1 codes (ES.MD, ES.CT, …). Respondents overwhelmingly type a
+// *province* (Barcelona, Málaga, Salamanca) or city rather than the
+// community, so the lookup folds all 50 provinces + major cities up into
+// their community. Keys are accent-stripped lowercase (see normalizeESState).
+const ES_STATE = {
+  // Andalucía
+  "andalucia": "ES.AN", "andalusia": "ES.AN", "almeria": "ES.AN", "cadiz": "ES.AN",
+  "cordoba": "ES.AN", "granada": "ES.AN", "huelva": "ES.AN", "jaen": "ES.AN",
+  "malaga": "ES.AN", "sevilla": "ES.AN", "seville": "ES.AN",
+  // Aragón
+  "aragon": "ES.AR", "huesca": "ES.AR", "teruel": "ES.AR", "zaragoza": "ES.AR", "saragossa": "ES.AR",
+  // Principado de Asturias
+  "asturias": "ES.AS", "principado de asturias": "ES.AS", "oviedo": "ES.AS", "gijon": "ES.AS", "aviles": "ES.AS",
+  // Cantabria
+  "cantabria": "ES.CB", "santander": "ES.CB",
+  // Castilla y León
+  "castilla y leon": "ES.CL", "castilla leon": "ES.CL", "castile and leon": "ES.CL",
+  "avila": "ES.CL", "burgos": "ES.CL", "leon": "ES.CL", "palencia": "ES.CL",
+  "salamanca": "ES.CL", "segovia": "ES.CL", "soria": "ES.CL", "valladolid": "ES.CL", "zamora": "ES.CL",
+  // Castilla-La Mancha
+  "castilla-la mancha": "ES.CM", "castilla la mancha": "ES.CM", "castile-la mancha": "ES.CM", "castille-la mancha": "ES.CM",
+  "albacete": "ES.CM", "ciudad real": "ES.CM", "cuenca": "ES.CM", "guadalajara": "ES.CM", "toledo": "ES.CM",
+  // Cataluña
+  "cataluna": "ES.CT", "catalunya": "ES.CT", "catalonia": "ES.CT", "barcelona": "ES.CT",
+  "girona": "ES.CT", "gerona": "ES.CT", "lleida": "ES.CT", "lerida": "ES.CT", "tarragona": "ES.CT",
+  // Comunidad de Madrid
+  "madrid": "ES.MD", "comunidad de madrid": "ES.MD", "community of madrid": "ES.MD",
+  // Comunidad Valenciana
+  "comunidad valenciana": "ES.VC", "valencian community": "ES.VC", "valencia": "ES.VC",
+  "alicante": "ES.VC", "alacant": "ES.VC", "castellon": "ES.VC", "castello de la plana": "ES.VC",
+  // Extremadura
+  "extremadura": "ES.EX", "badajoz": "ES.EX", "caceres": "ES.EX", "merida": "ES.EX",
+  // Galicia
+  "galicia": "ES.GA", "a coruna": "ES.GA", "coruna": "ES.GA", "la coruna": "ES.GA",
+  "lugo": "ES.GA", "ourense": "ES.GA", "orense": "ES.GA", "pontevedra": "ES.GA", "vigo": "ES.GA",
+  // Islas Baleares
+  "islas baleares": "ES.PM", "baleares": "ES.PM", "balearic islands": "ES.PM", "illes balears": "ES.PM",
+  "palma": "ES.PM", "mallorca": "ES.PM", "majorca": "ES.PM", "ibiza": "ES.PM", "menorca": "ES.PM",
+  // Islas Canarias
+  "islas canarias": "ES.CN", "canarias": "ES.CN", "canary islands": "ES.CN", "las palmas": "ES.CN",
+  "santa cruz de tenerife": "ES.CN", "tenerife": "ES.CN", "tf": "ES.CN", "gran canaria": "ES.CN", "fuerteventura": "ES.CN",
+  // La Rioja
+  "la rioja": "ES.LO", "rioja": "ES.LO", "logrono": "ES.LO",
+  // Comunidad Foral de Navarra
+  "navarra": "ES.NA", "navarre": "ES.NA", "comunidad foral de navarra": "ES.NA", "pamplona": "ES.NA", "iruna": "ES.NA",
+  // País Vasco
+  "pais vasco": "ES.PV", "basque country": "ES.PV", "euskadi": "ES.PV", "alava": "ES.PV",
+  "araba": "ES.PV", "vitoria": "ES.PV", "guipuzcoa": "ES.PV", "gipuzkoa": "ES.PV",
+  "san sebastian": "ES.PV", "donostia": "ES.PV", "vizcaya": "ES.PV", "bizkaia": "ES.PV", "bilbao": "ES.PV",
+  // Región de Murcia
+  "murcia": "ES.MU", "region de murcia": "ES.MU", "cartagena": "ES.MU",
+  // Ceuta y Melilla
+  "ceuta": "ES.ML", "melilla": "ES.ML", "ceuta y melilla": "ES.ML",
+};
+
+// Ordered substring matchers — tried when the exact-key lookup misses. Catches
+// compound entries ("madrid, spain"), city names, and island provinces.
+const ES_SUBSTRING = [
+  [/madrid/, "ES.MD"],
+  [/barcelona|catalu|catalo|girona|gerona|tarragona|lleida|lerida/, "ES.CT"],
+  [/valencia|alicante|castello|alacant/, "ES.VC"],
+  [/andaluc|andalus|malaga|sevill|cadiz|granada|cordoba|huelva|jaen|almeria/, "ES.AN"],
+  [/galicia|coruna|pontevedra|ourense|orense|vigo|lugo/, "ES.GA"],
+  [/pais vasco|basque|euskadi|vizcaya|bizkaia|bilbao|guipuzcoa|gipuzkoa|donostia|alava|araba/, "ES.PV"],
+  [/asturias|oviedo|gijon/, "ES.AS"],
+  [/murcia|cartagena/, "ES.MU"],
+  [/aragon|zaragoza|huesca|teruel/, "ES.AR"],
+  [/castilla y leon|castilla leon|salamanca|valladolid|burgos|\bleon\b|segovia|zamora|palencia|soria|avila/, "ES.CL"],
+  [/castil\w*.?la mancha|albacete|toledo|cuenca|guadalajara|ciudad real/, "ES.CM"],
+  [/extremadura|badajoz|caceres|merida/, "ES.EX"],
+  [/canaria|tenerife|las palmas|fuerteventura|lanzarote|la palma|gomera|hierro/, "ES.CN"],
+  [/balear|mallorca|majorca|ibiza|menorca|palma/, "ES.PM"],
+  [/navarra|navarre|pamplona/, "ES.NA"],
+  [/la rioja|rioja|logrono/, "ES.LO"],
+  [/cantabria|santander/, "ES.CB"],
+  [/ceuta|melilla/, "ES.ML"],
+];
+
+// Strip diacritics so "Andalucía"/"Málaga" match the ASCII keys above.
+function deaccent(s) {
+  return String(s || "").normalize("NFD").replace(/\p{Diacritic}/gu, "");
+}
+
+// Clean display names for the popup, keyed by HASC_1.
+const ES_LABEL = {
+  "ES.AN": "Andalucía", "ES.AR": "Aragón", "ES.AS": "Asturias", "ES.CB": "Cantabria",
+  "ES.CL": "Castilla y León", "ES.CM": "Castilla-La Mancha", "ES.CT": "Cataluña",
+  "ES.MD": "Comunidad de Madrid", "ES.VC": "Comunidad Valenciana", "ES.EX": "Extremadura",
+  "ES.GA": "Galicia", "ES.PM": "Islas Baleares", "ES.CN": "Islas Canarias",
+  "ES.LO": "La Rioja", "ES.NA": "Navarra", "ES.PV": "País Vasco", "ES.MU": "Región de Murcia",
+  "ES.ML": "Ceuta y Melilla",
+};
+
+function normalizeESState(s) {
+  const k = deaccent(norm(s));
+  if (!k) return null;
+  if (ES_STATE[k]) return ES_STATE[k];
+  for (const [re, code] of ES_SUBSTRING) if (re.test(k)) return code;
   return null;
 }
 
@@ -808,6 +916,7 @@ function main() {
     mxNoState: 0,
     deNoState: 0,
     auNoState: 0,
+    esNoState: 0,
     other: 0,
   };
   const recovered = { byCity: 0, byEmbeddedZip: 0 }; // US rows saved from the drop pile
@@ -864,19 +973,19 @@ function main() {
       if (!s) { skipped.auNoState += 1; continue; }
       level = "au_state";
       id = s;
+    } else if (country === "ES") {
+      // Region field is the strongest signal (province or community name);
+      // fall back to the city field so an empty region still resolves.
+      const s = normalizeESState(row[COL_REGION]) || normalizeESState(row[COL_CITY]);
+      if (!s) { skipped.esNoState += 1; continue; }
+      level = "es_state";
+      id = s;
     } else if (country === "GB") {
-      const nation = normalizeGBNation(row[COL_REGION], row[COL_CITY]);
-      if (nation === "ENG") {
-        // Try L2 (unitary authority / county) by city PIP. If that fails,
-        // fall back to L1 England so the response still appears.
-        const divGid = resolveEnglandLevel2(row);
-        if (divGid) { level = "gb_division"; id = divGid; }
-        else { level = "gb_nation"; id = nation; }
-      } else {
-        // Scotland/Wales/NI stay at L1 — too few responses to split further.
-        level = "gb_nation";
-        id = nation;
-      }
+      // Roll the UK up to its four constituent nations (England / Scotland /
+      // Wales / Northern Ireland) — the logical unit for this survey's volume.
+      // English L2 divisions were too granular, so England is no longer split.
+      level = "gb_nation";
+      id = normalizeGBNation(row[COL_REGION], row[COL_CITY]);
     } else {
       level = "country";
       id = country;
@@ -897,6 +1006,67 @@ function main() {
     byCountry[country] = (byCountry[country] || 0) + 1;
     validRows += 1;
   }
+
+  // ----- Sub-national rollup by response volume -----
+  // Outside the US, only show a sub-national boundary if it clears a response
+  // threshold; sparser regions roll up to the next-coarser level, cascading to
+  // the country. (US counties are always shown.) This stops thin-data areas
+  // from fragmenting into dozens of 1–2 response polygons.
+  const SUBNAT_MIN = 30; // must exceed this many responses to stand alone
+
+  // CA census division (GID_2) → province ISO, read straight off the division
+  // feature's own province name (NAME_1).
+  const caDivToProv = new Map();
+  for (const f of caDivisions.features) {
+    const prov = normalizeCAProvince(f.properties.NAME_1);
+    if (prov) caDivToProv.set(f.properties.GID_2, prov);
+  }
+
+  function rollupParent(agg) {
+    if (agg.country === "US") return null;
+    switch (agg.level) {
+      case "division": { // CA census division → province (→ country)
+        const prov = caDivToProv.get(agg.id);
+        return prov
+          ? { country: "CA", level: "province", id: prov }
+          : { country: "CA", level: "country", id: "CA" };
+      }
+      case "province":   // CA
+      case "de_state":
+      case "au_state":
+        return { country: agg.country, level: "country", id: agg.country };
+      // GB nations, MX states, and ES autonomous communities are always shown
+      // in full — never rolled up, so no whole-country remainder polygon.
+      default:
+        return null;     // county (US), country, gb_nation, state (MX), es_state
+    }
+  }
+
+  function mergeAgg(parent, src) {
+    const key = `${parent.country}:${parent.level}:${parent.id}`;
+    let p = aggregates.get(key);
+    if (!p) {
+      p = { country: parent.country, level: parent.level, id: parent.id, total: 0, a_counts: {} };
+      aggregates.set(key, p);
+    }
+    p.total += src.total;
+    for (const [t, n] of Object.entries(src.a_counts)) p.a_counts[t] = (p.a_counts[t] || 0) + n;
+  }
+
+  // Cascade finest → coarsest so a level's total already includes anything
+  // rolled into it before we test whether it clears the threshold itself.
+  let rolledUp = 0;
+  for (const lvl of ["division", "province", "gb_nation", "de_state", "au_state", "state", "es_state"]) {
+    for (const [key, agg] of [...aggregates]) {
+      if (agg.level !== lvl || agg.total > SUBNAT_MIN) continue;
+      const parent = rollupParent(agg);
+      if (!parent) continue;
+      mergeAgg(parent, agg);
+      aggregates.delete(key);
+      rolledUp += 1;
+    }
+  }
+  console.log(`  sub-national regions rolled up (≤${SUBNAT_MIN} responses): ${rolledUp}`);
 
   // Compute dominants
   for (const agg of aggregates.values()) {
@@ -997,6 +1167,14 @@ function main() {
     if (hasc && hasc !== "NA") gadmAUByHASC.set(hasc, f);
   }
 
+  // ----- Join: ES L1 autonomous communities (by HASC_1 code) -----
+  const esStates = readGeoJSON(STATES_ES_PATH);
+  const gadmESByHASC = new Map();
+  for (const f of esStates.features) {
+    const hasc = f.properties.HASC_1;
+    if (hasc && hasc !== "NA") gadmESByHASC.set(hasc, f);
+  }
+
   // ----- Join: GB L2 English unitary authorities / counties -----
   const gadmGBDivByGID = new Map();
   for (const f of gbDivisions.features) {
@@ -1090,6 +1268,21 @@ function main() {
     }
   }
 
+  // CA is excluded from countries_world (it ships as L1 tiers), but the rollup
+  // can produce a Canada-level aggregate (provinces below threshold), so
+  // synthesize its L0 outline by merging the province features already loaded.
+  // (MX no longer rolls up — every Mexican state is shown — so it needs none.)
+  function synthCountry(fc, iso, name) {
+    const polys = [];
+    for (const f of fc.features) pushPolys(f.geometry, polys);
+    return {
+      type: "Feature",
+      geometry: { type: "MultiPolygon", coordinates: polys },
+      properties: { ISO_A2: iso, NAME: name },
+    };
+  }
+  if (!gadmCountryByISO.has("CA")) gadmCountryByISO.set("CA", synthCountry(provinces, "CA", "Canada"));
+
   // Build outputs
   const polygons = { type: "FeatureCollection", features: [] };
   const centroids = { type: "FeatureCollection", features: [] };
@@ -1162,6 +1355,12 @@ function main() {
       const f = gadmAUByHASC.get(agg.id);
       const label = f ? gadmStateName(f.properties.NAME_1) : agg.id;
       emit(agg, f, label);
+    } else if (agg.level === "es_state") {
+      const f = gadmESByHASC.get(agg.id);
+      // GADM concatenates the Spanish NAME_1 ("CastillayLeón"); use a clean
+      // display table keyed by HASC instead.
+      const label = ES_LABEL[agg.id] || (f ? gadmStateName(f.properties.NAME_1) : agg.id);
+      emit(agg, f, label);
     } else if (agg.level === "gb_nation") {
       const f = gadmGBByCode.get(agg.id);
       emit(agg, f, GB_LABEL[agg.id] || agg.id);
@@ -1190,6 +1389,7 @@ function main() {
     gb_nation: 1,
     de_state: 1,
     au_state: 1,
+    es_state: 1,        // ES autonomous communities
     state: 1,           // MX states
     division: 2,        // CA census divisions
     gb_division: 2,     // English unitary authorities / counties
@@ -1221,6 +1421,7 @@ function main() {
         skipped.mxNoState +
         skipped.deNoState +
         skipped.auNoState +
+        skipped.esNoState +
         skipped.other,
       skipped_breakdown: skipped,
       recovered_us: recovered,

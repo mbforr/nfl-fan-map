@@ -7,6 +7,8 @@ for the later Mapbox overlay against fan-bar locations.
 """
 from __future__ import annotations
 
+import json
+
 import geopandas as gpd
 import pandas as pd
 
@@ -37,11 +39,20 @@ def main() -> None:
         rust_total = int(sum(counts.get(t, 0) for t in lk.RUST_BELT_TEAMS))
         cell_total = int(feat["total"])
         cen = centroids[centroids["id"].astype(str) == fips].geometry.iloc[0]
+        # Most popular Rust Belt team in this city, and the top-3 teams overall.
+        rust_here = {t: counts.get(t, 0) for t in lk.RUST_BELT_TEAMS if counts.get(t, 0)}
+        top_rust = max(rust_here, key=rust_here.get) if rust_here else None
+        top3 = sorted(counts.items(), key=lambda kv: kv[1], reverse=True)[:3]
         point_rows.append({
             "metro": metro, "id": fips, "region": feat["region"],
             "total": cell_total, "rust_belt_fans": rust_total,
             "rust_belt_share": round(rust_total / cell_total, 4) if cell_total else None,
             "dominant": feat["a_dominant"],
+            "top_rust_team": top_rust,
+            "top_rust_nick": top_rust.split()[-1] if top_rust else "",
+            "top_rust_count": int(rust_here.get(top_rust, 0)) if top_rust else 0,
+            # JSON strings so they survive the GeoJSON property round-trip.
+            "top3": json.dumps([{"team": t, "count": int(n)} for t, n in top3]),
             **{t: int(counts.get(t, 0)) for t in lk.RUST_BELT_TEAMS},
             "geometry": cen,
         })

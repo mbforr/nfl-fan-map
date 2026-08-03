@@ -1,0 +1,1550 @@
+{
+  "headline": {
+    "total_rows": 29081,
+    "valid_rows": 28820,
+    "on_map": 28648,
+    "regions": 2395,
+    "countries_50": 20,
+    "recovered_us": {
+      "byCity": 1492,
+      "byEmbeddedZip": 5
+    },
+    "packers_full_share": 0.12341391286406932,
+    "packers_prespike_share": 0.0649513820605266
+  },
+  "spike": {
+    "series": [
+      {
+        "date": "05-11",
+        "share": 0.0618
+      },
+      {
+        "date": "05-12",
+        "share": 0.0626
+      },
+      {
+        "date": "05-13",
+        "share": 0.0605
+      },
+      {
+        "date": "05-14",
+        "share": 0.0744
+      },
+      {
+        "date": "05-15",
+        "share": 0.0676
+      },
+      {
+        "date": "05-16",
+        "share": 0.0625
+      },
+      {
+        "date": "05-17",
+        "share": 0.0655
+      },
+      {
+        "date": "05-18",
+        "share": 0.0559
+      },
+      {
+        "date": "05-19",
+        "share": 0.3961
+      },
+      {
+        "date": "05-20",
+        "share": 0.4311
+      },
+      {
+        "date": "05-21",
+        "share": 0.3833
+      },
+      {
+        "date": "05-22",
+        "share": 0.2134
+      },
+      {
+        "date": "05-23",
+        "share": 0.225
+      },
+      {
+        "date": "05-24",
+        "share": 0.2051
+      },
+      {
+        "date": "05-25",
+        "share": 0.1429
+      },
+      {
+        "date": "05-26",
+        "share": 0.0694
+      },
+      {
+        "date": "05-27",
+        "share": 0.0384
+      },
+      {
+        "date": "05-28",
+        "share": 0.0781
+      },
+      {
+        "date": "05-29",
+        "share": 0.0615
+      },
+      {
+        "date": "05-30",
+        "share": 0.1429
+      },
+      {
+        "date": "05-31",
+        "share": 0.1084
+      },
+      {
+        "date": "06-01",
+        "share": 0.1042
+      },
+      {
+        "date": "06-02",
+        "share": 0.0363
+      },
+      {
+        "date": "06-03",
+        "share": 0.0533
+      },
+      {
+        "date": "06-04",
+        "share": 0.0476
+      },
+      {
+        "date": "06-05",
+        "share": 0.0845
+      },
+      {
+        "date": "06-06",
+        "share": 0.1333
+      },
+      {
+        "date": "06-07",
+        "share": 0.0961
+      },
+      {
+        "date": "06-08",
+        "share": 0.087
+      },
+      {
+        "date": "06-09",
+        "share": 0.0465
+      },
+      {
+        "date": "06-10",
+        "share": 0.2785
+      },
+      {
+        "date": "06-11",
+        "share": 0.34
+      },
+      {
+        "date": "06-12",
+        "share": 0.0909
+      },
+      {
+        "date": "06-13",
+        "share": 0.2667
+      },
+      {
+        "date": "06-14",
+        "share": 0.2857
+      },
+      {
+        "date": "06-15",
+        "share": 0.0833
+      },
+      {
+        "date": "06-16",
+        "share": 0.1702
+      },
+      {
+        "date": "06-17",
+        "share": 0.0426
+      },
+      {
+        "date": "06-18",
+        "share": 0.093
+      },
+      {
+        "date": "06-19",
+        "share": 0.0882
+      },
+      {
+        "date": "06-20",
+        "share": 0.32
+      },
+      {
+        "date": "06-21",
+        "share": 0.2381
+      },
+      {
+        "date": "06-23",
+        "share": 0.28
+      },
+      {
+        "date": "06-24",
+        "share": 0.25
+      },
+      {
+        "date": "06-25",
+        "share": 0.3182
+      },
+      {
+        "date": "06-26",
+        "share": 0.2022
+      },
+      {
+        "date": "06-27",
+        "share": 0.0381
+      },
+      {
+        "date": "06-28",
+        "share": 0.0163
+      },
+      {
+        "date": "06-29",
+        "share": 0.007
+      },
+      {
+        "date": "06-30",
+        "share": 0.0842
+      },
+      {
+        "date": "07-01",
+        "share": 0.0923
+      },
+      {
+        "date": "07-02",
+        "share": 0.05
+      },
+      {
+        "date": "07-03",
+        "share": 0.0357
+      },
+      {
+        "date": "07-04",
+        "share": 0.1538
+      },
+      {
+        "date": "07-05",
+        "share": 0.1538
+      },
+      {
+        "date": "07-06",
+        "share": 0.1364
+      },
+      {
+        "date": "07-07",
+        "share": 0.2727
+      },
+      {
+        "date": "07-08",
+        "share": 0.2692
+      },
+      {
+        "date": "07-09",
+        "share": 0.1176
+      },
+      {
+        "date": "07-10",
+        "share": 0.2222
+      },
+      {
+        "date": "07-11",
+        "share": 0.0592
+      },
+      {
+        "date": "07-12",
+        "share": 0.0302
+      }
+    ],
+    "spike_days": [
+      "05-19",
+      "05-20",
+      "05-21",
+      "05-22",
+      "05-23",
+      "05-24",
+      "06-10",
+      "06-11",
+      "06-13",
+      "06-14",
+      "06-16",
+      "06-20",
+      "06-21",
+      "06-23",
+      "06-24",
+      "06-25",
+      "06-26",
+      "07-04",
+      "07-05",
+      "07-07",
+      "07-08",
+      "07-10"
+    ]
+  },
+  "prespike_leaderboard": [
+    {
+      "team": "Green Bay Packers",
+      "share": 0.0649513820605266,
+      "count": 1189
+    },
+    {
+      "team": "Seattle Seahawks",
+      "share": 0.0649513820605266,
+      "count": 1189
+    },
+    {
+      "team": "Philadelphia Eagles",
+      "share": 0.056811974216104,
+      "count": 1040
+    },
+    {
+      "team": "Buffalo Bills",
+      "share": 0.0541898830984376,
+      "count": 992
+    },
+    {
+      "team": "New England Patriots",
+      "share": 0.0532612258275975,
+      "count": 975
+    },
+    {
+      "team": "Chicago Bears",
+      "share": 0.0499836119305145,
+      "count": 915
+    },
+    {
+      "team": "Pittsburgh Steelers",
+      "share": 0.0463236097454386,
+      "count": 848
+    },
+    {
+      "team": "San Francisco 49ers",
+      "share": 0.0440292800174806,
+      "count": 806
+    },
+    {
+      "team": "Denver Broncos",
+      "share": 0.0431552496449251,
+      "count": 790
+    },
+    {
+      "team": "Detroit Lions",
+      "share": 0.038184201901016,
+      "count": 699
+    }
+  ],
+  "full_leaderboard": [
+    {
+      "team": "Green Bay Packers",
+      "share": 0.1234139128640693,
+      "count": 3589
+    },
+    {
+      "team": "Buffalo Bills",
+      "share": 0.0723496440975207,
+      "count": 2104
+    },
+    {
+      "team": "Pittsburgh Steelers",
+      "share": 0.0625150441869261,
+      "count": 1818
+    },
+    {
+      "team": "Seattle Seahawks",
+      "share": 0.0516832296000825,
+      "count": 1503
+    },
+    {
+      "team": "Philadelphia Eagles",
+      "share": 0.0496200268216361,
+      "count": 1443
+    },
+    {
+      "team": "New England Patriots",
+      "share": 0.0457687149685361,
+      "count": 1331
+    },
+    {
+      "team": "Chicago Bears",
+      "share": 0.0439462191809085,
+      "count": 1278
+    },
+    {
+      "team": "Denver Broncos",
+      "share": 0.0383067982531549,
+      "count": 1114
+    },
+    {
+      "team": "San Francisco 49ers",
+      "share": 0.0373783570028541,
+      "count": 1087
+    },
+    {
+      "team": "Detroit Lions",
+      "share": 0.0342491661222103,
+      "count": 996
+    }
+  ],
+  "diaspora": [
+    {
+      "team": "Las Vegas Raiders",
+      "home_state": "NV",
+      "pct": 0.0479,
+      "diaspora_pct_us": 0.0609,
+      "global_fans": 606
+    },
+    {
+      "team": "Washington Commanders",
+      "home_state": "MD",
+      "pct": 0.1376,
+      "diaspora_pct_us": 0.1656,
+      "global_fans": 574
+    },
+    {
+      "team": "New York Giants",
+      "home_state": "NJ",
+      "pct": 0.1661,
+      "diaspora_pct_us": 0.2181,
+      "global_fans": 855
+    },
+    {
+      "team": "New York Jets",
+      "home_state": "NJ",
+      "pct": 0.1772,
+      "diaspora_pct_us": 0.2262,
+      "global_fans": 536
+    },
+    {
+      "team": "Kansas City Chiefs",
+      "home_state": "MO",
+      "pct": 0.1801,
+      "diaspora_pct_us": 0.2245,
+      "global_fans": 722
+    },
+    {
+      "team": "Pittsburgh Steelers",
+      "home_state": "PA",
+      "pct": 0.1893,
+      "diaspora_pct_us": 0.2265,
+      "global_fans": 1796
+    },
+    {
+      "team": "New Orleans Saints",
+      "home_state": "LA",
+      "pct": 0.1909,
+      "diaspora_pct_us": 0.2555,
+      "global_fans": 550
+    },
+    {
+      "team": "Green Bay Packers",
+      "home_state": "WI",
+      "pct": 0.2244,
+      "diaspora_pct_us": 0.2675,
+      "global_fans": 3556
+    },
+    {
+      "team": "New England Patriots",
+      "home_state": "MA",
+      "pct": 0.2291,
+      "diaspora_pct_us": 0.3111,
+      "global_fans": 1301
+    },
+    {
+      "team": "Buffalo Bills",
+      "home_state": "NY",
+      "pct": 0.2398,
+      "diaspora_pct_us": 0.3451,
+      "global_fans": 2081
+    },
+    {
+      "team": "Miami Dolphins",
+      "home_state": "FL",
+      "pct": 0.2473,
+      "diaspora_pct_us": 0.3636,
+      "global_fans": 647
+    },
+    {
+      "team": "Seattle Seahawks",
+      "home_state": "WA",
+      "pct": 0.258,
+      "diaspora_pct_us": 0.3969,
+      "global_fans": 1477
+    },
+    {
+      "team": "Baltimore Ravens",
+      "home_state": "MD",
+      "pct": 0.2589,
+      "diaspora_pct_us": 0.3849,
+      "global_fans": 846
+    },
+    {
+      "team": "Denver Broncos",
+      "home_state": "CO",
+      "pct": 0.2602,
+      "diaspora_pct_us": 0.3235,
+      "global_fans": 1099
+    },
+    {
+      "team": "Philadelphia Eagles",
+      "home_state": "PA",
+      "pct": 0.263,
+      "diaspora_pct_us": 0.3463,
+      "global_fans": 1426
+    },
+    {
+      "team": "Jacksonville Jaguars",
+      "home_state": "FL",
+      "pct": 0.2803,
+      "diaspora_pct_us": 0.3834,
+      "global_fans": 346
+    },
+    {
+      "team": "Dallas Cowboys",
+      "home_state": "TX",
+      "pct": 0.2907,
+      "diaspora_pct_us": 0.361,
+      "global_fans": 884
+    },
+    {
+      "team": "Minnesota Vikings",
+      "home_state": "MN",
+      "pct": 0.2991,
+      "diaspora_pct_us": 0.4242,
+      "global_fans": 963
+    },
+    {
+      "team": "Cincinnati Bengals",
+      "home_state": "OH",
+      "pct": 0.3024,
+      "diaspora_pct_us": 0.3918,
+      "global_fans": 916
+    },
+    {
+      "team": "Arizona Cardinals",
+      "home_state": "AZ",
+      "pct": 0.3168,
+      "diaspora_pct_us": 0.4486,
+      "global_fans": 262
+    },
+    {
+      "team": "San Francisco 49ers",
+      "home_state": "CA",
+      "pct": 0.3293,
+      "diaspora_pct_us": 0.4881,
+      "global_fans": 1063
+    },
+    {
+      "team": "Los Angeles Chargers",
+      "home_state": "CA",
+      "pct": 0.3623,
+      "diaspora_pct_us": 0.4773,
+      "global_fans": 494
+    },
+    {
+      "team": "Tampa Bay Buccaneers",
+      "home_state": "FL",
+      "pct": 0.3631,
+      "diaspora_pct_us": 0.5495,
+      "global_fans": 336
+    },
+    {
+      "team": "Atlanta Falcons",
+      "home_state": "GA",
+      "pct": 0.3796,
+      "diaspora_pct_us": 0.486,
+      "global_fans": 411
+    },
+    {
+      "team": "Tennessee Titans",
+      "home_state": "TN",
+      "pct": 0.3879,
+      "diaspora_pct_us": 0.4615,
+      "global_fans": 232
+    },
+    {
+      "team": "Detroit Lions",
+      "home_state": "MI",
+      "pct": 0.3947,
+      "diaspora_pct_us": 0.5201,
+      "global_fans": 983
+    },
+    {
+      "team": "Chicago Bears",
+      "home_state": "IL",
+      "pct": 0.3975,
+      "diaspora_pct_us": 0.4529,
+      "global_fans": 1258
+    },
+    {
+      "team": "Carolina Panthers",
+      "home_state": "NC",
+      "pct": 0.4096,
+      "diaspora_pct_us": 0.4891,
+      "global_fans": 603
+    },
+    {
+      "team": "Indianapolis Colts",
+      "home_state": "IN",
+      "pct": 0.4329,
+      "diaspora_pct_us": 0.5613,
+      "global_fans": 328
+    },
+    {
+      "team": "Los Angeles Rams",
+      "home_state": "CA",
+      "pct": 0.4466,
+      "diaspora_pct_us": 0.5932,
+      "global_fans": 506
+    },
+    {
+      "team": "Cleveland Browns",
+      "home_state": "OH",
+      "pct": 0.4971,
+      "diaspora_pct_us": 0.5798,
+      "global_fans": 519
+    },
+    {
+      "team": "Houston Texans",
+      "home_state": "TX",
+      "pct": 0.5593,
+      "diaspora_pct_us": 0.7354,
+      "global_fans": 472
+    }
+  ],
+  "moran": [
+    {
+      "team": "Philadelphia Eagles",
+      "moran_i": 0.6765,
+      "p_sim": 0.001,
+      "n_fans_us": 1083
+    },
+    {
+      "team": "New York Jets",
+      "moran_i": 0.6705,
+      "p_sim": 0.001,
+      "n_fans_us": 420
+    },
+    {
+      "team": "Washington Commanders",
+      "moran_i": 0.643,
+      "p_sim": 0.001,
+      "n_fans_us": 477
+    },
+    {
+      "team": "New England Patriots",
+      "moran_i": 0.6327,
+      "p_sim": 0.001,
+      "n_fans_us": 958
+    },
+    {
+      "team": "New York Giants",
+      "moran_i": 0.5934,
+      "p_sim": 0.001,
+      "n_fans_us": 651
+    },
+    {
+      "team": "San Francisco 49ers",
+      "moran_i": 0.5812,
+      "p_sim": 0.001,
+      "n_fans_us": 717
+    },
+    {
+      "team": "Los Angeles Chargers",
+      "moran_i": 0.5749,
+      "p_sim": 0.001,
+      "n_fans_us": 375
+    },
+    {
+      "team": "Denver Broncos",
+      "moran_i": 0.5534,
+      "p_sim": 0.001,
+      "n_fans_us": 884
+    },
+    {
+      "team": "Baltimore Ravens",
+      "moran_i": 0.5329,
+      "p_sim": 0.001,
+      "n_fans_us": 569
+    },
+    {
+      "team": "Tampa Bay Buccaneers",
+      "moran_i": 0.5173,
+      "p_sim": 0.001,
+      "n_fans_us": 222
+    },
+    {
+      "team": "Minnesota Vikings",
+      "moran_i": 0.5108,
+      "p_sim": 0.001,
+      "n_fans_us": 679
+    },
+    {
+      "team": "Atlanta Falcons",
+      "moran_i": 0.5002,
+      "p_sim": 0.001,
+      "n_fans_us": 321
+    },
+    {
+      "team": "Las Vegas Raiders",
+      "moran_i": 0.4822,
+      "p_sim": 0.001,
+      "n_fans_us": 476
+    },
+    {
+      "team": "Detroit Lions",
+      "moran_i": 0.4757,
+      "p_sim": 0.001,
+      "n_fans_us": 746
+    },
+    {
+      "team": "Miami Dolphins",
+      "moran_i": 0.4552,
+      "p_sim": 0.001,
+      "n_fans_us": 440
+    },
+    {
+      "team": "Cincinnati Bengals",
+      "moran_i": 0.4471,
+      "p_sim": 0.001,
+      "n_fans_us": 707
+    },
+    {
+      "team": "Dallas Cowboys",
+      "moran_i": 0.4443,
+      "p_sim": 0.001,
+      "n_fans_us": 712
+    },
+    {
+      "team": "Green Bay Packers",
+      "moran_i": 0.3971,
+      "p_sim": 0.001,
+      "n_fans_us": 2983
+    },
+    {
+      "team": "Tennessee Titans",
+      "moran_i": 0.3672,
+      "p_sim": 0.001,
+      "n_fans_us": 195
+    },
+    {
+      "team": "Los Angeles Rams",
+      "moran_i": 0.3535,
+      "p_sim": 0.001,
+      "n_fans_us": 381
+    },
+    {
+      "team": "Jacksonville Jaguars",
+      "moran_i": 0.3474,
+      "p_sim": 0.001,
+      "n_fans_us": 253
+    },
+    {
+      "team": "Cleveland Browns",
+      "moran_i": 0.3452,
+      "p_sim": 0.001,
+      "n_fans_us": 445
+    },
+    {
+      "team": "Chicago Bears",
+      "moran_i": 0.3427,
+      "p_sim": 0.001,
+      "n_fans_us": 1104
+    },
+    {
+      "team": "Carolina Panthers",
+      "moran_i": 0.2889,
+      "p_sim": 0.001,
+      "n_fans_us": 505
+    },
+    {
+      "team": "New Orleans Saints",
+      "moran_i": 0.2779,
+      "p_sim": 0.001,
+      "n_fans_us": 411
+    },
+    {
+      "team": "Pittsburgh Steelers",
+      "moran_i": 0.2585,
+      "p_sim": 0.001,
+      "n_fans_us": 1501
+    },
+    {
+      "team": "Houston Texans",
+      "moran_i": 0.2447,
+      "p_sim": 0.001,
+      "n_fans_us": 359
+    },
+    {
+      "team": "Kansas City Chiefs",
+      "moran_i": 0.2266,
+      "p_sim": 0.002,
+      "n_fans_us": 579
+    },
+    {
+      "team": "Indianapolis Colts",
+      "moran_i": 0.2072,
+      "p_sim": 0.002,
+      "n_fans_us": 253
+    },
+    {
+      "team": "Buffalo Bills",
+      "moran_i": 0.1687,
+      "p_sim": 0.001,
+      "n_fans_us": 1446
+    },
+    {
+      "team": "Seattle Seahawks",
+      "moran_i": 0.1538,
+      "p_sim": 0.002,
+      "n_fans_us": 960
+    },
+    {
+      "team": "Arizona Cardinals",
+      "moran_i": 0.1207,
+      "p_sim": 0.001,
+      "n_fans_us": 185
+    }
+  ],
+  "distance": [
+    {
+      "team": "New York Jets",
+      "wmedian_km_us": 101.5,
+      "pct_within_100km_us": 0.4714
+    },
+    {
+      "team": "New York Giants",
+      "wmedian_km_us": 126.9,
+      "pct_within_100km_us": 0.4132
+    },
+    {
+      "team": "Philadelphia Eagles",
+      "wmedian_km_us": 158.0,
+      "pct_within_100km_us": 0.4183
+    },
+    {
+      "team": "Washington Commanders",
+      "wmedian_km_us": 159.3,
+      "pct_within_100km_us": 0.4235
+    },
+    {
+      "team": "Baltimore Ravens",
+      "wmedian_km_us": 160.1,
+      "pct_within_100km_us": 0.4499
+    },
+    {
+      "team": "Indianapolis Colts",
+      "wmedian_km_us": 174.7,
+      "pct_within_100km_us": 0.3715
+    },
+    {
+      "team": "Tampa Bay Buccaneers",
+      "wmedian_km_us": 189.5,
+      "pct_within_100km_us": 0.3423
+    },
+    {
+      "team": "Cleveland Browns",
+      "wmedian_km_us": 203.5,
+      "pct_within_100km_us": 0.3438
+    },
+    {
+      "team": "New England Patriots",
+      "wmedian_km_us": 207.4,
+      "pct_within_100km_us": 0.3445
+    },
+    {
+      "team": "Carolina Panthers",
+      "wmedian_km_us": 208.8,
+      "pct_within_100km_us": 0.2535
+    },
+    {
+      "team": "Los Angeles Rams",
+      "wmedian_km_us": 217.9,
+      "pct_within_100km_us": 0.4068
+    },
+    {
+      "team": "Atlanta Falcons",
+      "wmedian_km_us": 219.2,
+      "pct_within_100km_us": 0.3925
+    },
+    {
+      "team": "Chicago Bears",
+      "wmedian_km_us": 221.3,
+      "pct_within_100km_us": 0.394
+    },
+    {
+      "team": "Houston Texans",
+      "wmedian_km_us": 236.5,
+      "pct_within_100km_us": 0.4234
+    },
+    {
+      "team": "Cincinnati Bengals",
+      "wmedian_km_us": 251.8,
+      "pct_within_100km_us": 0.2928
+    },
+    {
+      "team": "Tennessee Titans",
+      "wmedian_km_us": 267.1,
+      "pct_within_100km_us": 0.2667
+    },
+    {
+      "team": "Detroit Lions",
+      "wmedian_km_us": 274.4,
+      "pct_within_100km_us": 0.2694
+    },
+    {
+      "team": "Minnesota Vikings",
+      "wmedian_km_us": 366.7,
+      "pct_within_100km_us": 0.299
+    },
+    {
+      "team": "Kansas City Chiefs",
+      "wmedian_km_us": 396.7,
+      "pct_within_100km_us": 0.2142
+    },
+    {
+      "team": "Arizona Cardinals",
+      "wmedian_km_us": 509.5,
+      "pct_within_100km_us": 0.3081
+    },
+    {
+      "team": "Pittsburgh Steelers",
+      "wmedian_km_us": 532.7,
+      "pct_within_100km_us": 0.1466
+    },
+    {
+      "team": "Buffalo Bills",
+      "wmedian_km_us": 564.6,
+      "pct_within_100km_us": 0.1936
+    },
+    {
+      "team": "Seattle Seahawks",
+      "wmedian_km_us": 621.3,
+      "pct_within_100km_us": 0.2667
+    },
+    {
+      "team": "Los Angeles Chargers",
+      "wmedian_km_us": 625.7,
+      "pct_within_100km_us": 0.1867
+    },
+    {
+      "team": "Las Vegas Raiders",
+      "wmedian_km_us": 632.0,
+      "pct_within_100km_us": 0.042
+    },
+    {
+      "team": "Jacksonville Jaguars",
+      "wmedian_km_us": 662.7,
+      "pct_within_100km_us": 0.249
+    },
+    {
+      "team": "San Francisco 49ers",
+      "wmedian_km_us": 676.2,
+      "pct_within_100km_us": 0.2399
+    },
+    {
+      "team": "Green Bay Packers",
+      "wmedian_km_us": 730.1,
+      "pct_within_100km_us": 0.0634
+    },
+    {
+      "team": "New Orleans Saints",
+      "wmedian_km_us": 799.2,
+      "pct_within_100km_us": 0.1533
+    },
+    {
+      "team": "Denver Broncos",
+      "wmedian_km_us": 858.9,
+      "pct_within_100km_us": 0.1867
+    },
+    {
+      "team": "Dallas Cowboys",
+      "wmedian_km_us": 998.9,
+      "pct_within_100km_us": 0.1713
+    },
+    {
+      "team": "Miami Dolphins",
+      "wmedian_km_us": 1465.6,
+      "pct_within_100km_us": 0.1545
+    }
+  ],
+  "international": [
+    {
+      "country": "US",
+      "total": 21997,
+      "top_team": "Green Bay Packers",
+      "top_count": 2983,
+      "top_share": 0.1356,
+      "second_team": "Pittsburgh Steelers"
+    },
+    {
+      "country": "CA",
+      "total": 1714,
+      "top_team": "Buffalo Bills",
+      "top_count": 296,
+      "top_share": 0.1727,
+      "second_team": "Seattle Seahawks"
+    },
+    {
+      "country": "GB",
+      "total": 998,
+      "top_team": "Buffalo Bills",
+      "top_count": 68,
+      "top_share": 0.0681,
+      "second_team": "Green Bay Packers"
+    },
+    {
+      "country": "AU",
+      "total": 620,
+      "top_team": "Buffalo Bills",
+      "top_count": 47,
+      "top_share": 0.0758,
+      "second_team": "San Francisco 49ers"
+    },
+    {
+      "country": "DE",
+      "total": 590,
+      "top_team": "Seattle Seahawks",
+      "top_count": 54,
+      "top_share": 0.0915,
+      "second_team": "Green Bay Packers"
+    },
+    {
+      "country": "MX",
+      "total": 374,
+      "top_team": "Green Bay Packers",
+      "top_count": 43,
+      "top_share": 0.115,
+      "second_team": "Pittsburgh Steelers"
+    },
+    {
+      "country": "BR",
+      "total": 238,
+      "top_team": "Green Bay Packers",
+      "top_count": 46,
+      "top_share": 0.1933,
+      "second_team": "San Francisco 49ers"
+    },
+    {
+      "country": "IE",
+      "total": 149,
+      "top_team": "Green Bay Packers",
+      "top_count": 17,
+      "top_share": 0.1141,
+      "second_team": "Buffalo Bills"
+    },
+    {
+      "country": "ID",
+      "total": 138,
+      "top_team": "Seattle Seahawks",
+      "top_count": 18,
+      "top_share": 0.1304,
+      "second_team": "Kansas City Chiefs"
+    },
+    {
+      "country": "NZ",
+      "total": 127,
+      "top_team": "Seattle Seahawks",
+      "top_count": 14,
+      "top_share": 0.1102,
+      "second_team": "Baltimore Ravens"
+    },
+    {
+      "country": "NL",
+      "total": 120,
+      "top_team": "San Francisco 49ers",
+      "top_count": 12,
+      "top_share": 0.1,
+      "second_team": "Green Bay Packers"
+    },
+    {
+      "country": "FR",
+      "total": 101,
+      "top_team": "Green Bay Packers",
+      "top_count": 12,
+      "top_share": 0.1188,
+      "second_team": "Philadelphia Eagles"
+    },
+    {
+      "country": "IT",
+      "total": 95,
+      "top_team": "Buffalo Bills",
+      "top_count": 19,
+      "top_share": 0.2,
+      "second_team": "Baltimore Ravens"
+    },
+    {
+      "country": "CH",
+      "total": 80,
+      "top_team": "Seattle Seahawks",
+      "top_count": 8,
+      "top_share": 0.1,
+      "second_team": "New England Patriots"
+    },
+    {
+      "country": "IL",
+      "total": 73,
+      "top_team": "Baltimore Ravens",
+      "top_count": 8,
+      "top_share": 0.1096,
+      "second_team": "New England Patriots"
+    },
+    {
+      "country": "DK",
+      "total": 66,
+      "top_team": "Kansas City Chiefs",
+      "top_count": 7,
+      "top_share": 0.1061,
+      "second_team": "Minnesota Vikings"
+    },
+    {
+      "country": "ES",
+      "total": 65,
+      "top_team": "Seattle Seahawks",
+      "top_count": 14,
+      "top_share": 0.2154,
+      "second_team": "Green Bay Packers"
+    },
+    {
+      "country": "SE",
+      "total": 62,
+      "top_team": "Green Bay Packers",
+      "top_count": 8,
+      "top_share": 0.129,
+      "second_team": "Philadelphia Eagles"
+    },
+    {
+      "country": "AT",
+      "total": 60,
+      "top_team": "San Francisco 49ers",
+      "top_count": 5,
+      "top_share": 0.0833,
+      "second_team": "Seattle Seahawks"
+    },
+    {
+      "country": "AR",
+      "total": 56,
+      "top_team": "Green Bay Packers",
+      "top_count": 25,
+      "top_share": 0.4464,
+      "second_team": "San Francisco 49ers"
+    }
+  ],
+  "voronoi": {
+    "overall": 0.3659,
+    "cells": [
+      {
+        "cell_team": "Green Bay Packers",
+        "label": "Packers",
+        "accuracy": 0.7484,
+        "total_fans_in_cell": 612,
+        "top_actual_team": "Green Bay Packers"
+      },
+      {
+        "cell_team": "Buffalo Bills",
+        "label": "Bills",
+        "accuracy": 0.6604,
+        "total_fans_in_cell": 530,
+        "top_actual_team": "Buffalo Bills"
+      },
+      {
+        "cell_team": "Pittsburgh Steelers",
+        "label": "Steelers",
+        "accuracy": 0.618,
+        "total_fans_in_cell": 411,
+        "top_actual_team": "Pittsburgh Steelers"
+      },
+      {
+        "cell_team": "Detroit Lions",
+        "label": "Lions",
+        "accuracy": 0.5992,
+        "total_fans_in_cell": 474,
+        "top_actual_team": "Detroit Lions"
+      },
+      {
+        "cell_team": "New England Patriots",
+        "label": "Patriots",
+        "accuracy": 0.5558,
+        "total_fans_in_cell": 869,
+        "top_actual_team": "New England Patriots"
+      },
+      {
+        "cell_team": "Philadelphia Eagles",
+        "label": "Eagles",
+        "accuracy": 0.5341,
+        "total_fans_in_cell": 822,
+        "top_actual_team": "Philadelphia Eagles"
+      },
+      {
+        "cell_team": "New Orleans Saints",
+        "label": "Saints",
+        "accuracy": 0.4902,
+        "total_fans_in_cell": 255,
+        "top_actual_team": "New Orleans Saints"
+      },
+      {
+        "cell_team": "Cleveland Browns",
+        "label": "Browns",
+        "accuracy": 0.4776,
+        "total_fans_in_cell": 335,
+        "top_actual_team": "Cleveland Browns"
+      },
+      {
+        "cell_team": "Seattle Seahawks",
+        "label": "Seahawks",
+        "accuracy": 0.4558,
+        "total_fans_in_cell": 1053,
+        "top_actual_team": "Seattle Seahawks"
+      },
+      {
+        "cell_team": "New York Giants",
+        "label": "Giants / Jets",
+        "accuracy": 0.404,
+        "total_fans_in_cell": 1386,
+        "top_actual_team": "New York Giants"
+      },
+      {
+        "cell_team": "Cincinnati Bengals",
+        "label": "Bengals",
+        "accuracy": 0.3931,
+        "total_fans_in_cell": 786,
+        "top_actual_team": "Cincinnati Bengals"
+      },
+      {
+        "cell_team": "Indianapolis Colts",
+        "label": "Colts",
+        "accuracy": 0.388,
+        "total_fans_in_cell": 317,
+        "top_actual_team": "Indianapolis Colts"
+      },
+      {
+        "cell_team": "Minnesota Vikings",
+        "label": "Vikings",
+        "accuracy": 0.3805,
+        "total_fans_in_cell": 975,
+        "top_actual_team": "Minnesota Vikings"
+      },
+      {
+        "cell_team": "Miami Dolphins",
+        "label": "Dolphins",
+        "accuracy": 0.3744,
+        "total_fans_in_cell": 227,
+        "top_actual_team": "Miami Dolphins"
+      },
+      {
+        "cell_team": "Chicago Bears",
+        "label": "Bears",
+        "accuracy": 0.3599,
+        "total_fans_in_cell": 1553,
+        "top_actual_team": "Chicago Bears"
+      },
+      {
+        "cell_team": "Denver Broncos",
+        "label": "Broncos",
+        "accuracy": 0.3452,
+        "total_fans_in_cell": 1037,
+        "top_actual_team": "Denver Broncos"
+      },
+      {
+        "cell_team": "Houston Texans",
+        "label": "Texans",
+        "accuracy": 0.3239,
+        "total_fans_in_cell": 670,
+        "top_actual_team": "Houston Texans"
+      },
+      {
+        "cell_team": "San Francisco 49ers",
+        "label": "49ers",
+        "accuracy": 0.3233,
+        "total_fans_in_cell": 866,
+        "top_actual_team": "San Francisco 49ers"
+      },
+      {
+        "cell_team": "Los Angeles Rams",
+        "label": "Rams / Chargers",
+        "accuracy": 0.3161,
+        "total_fans_in_cell": 1066,
+        "top_actual_team": "Los Angeles Rams"
+      },
+      {
+        "cell_team": "Baltimore Ravens",
+        "label": "Ravens",
+        "accuracy": 0.3134,
+        "total_fans_in_cell": 485,
+        "top_actual_team": "Baltimore Ravens"
+      },
+      {
+        "cell_team": "Jacksonville Jaguars",
+        "label": "Jaguars",
+        "accuracy": 0.2847,
+        "total_fans_in_cell": 281,
+        "top_actual_team": "Jacksonville Jaguars"
+      },
+      {
+        "cell_team": "Kansas City Chiefs",
+        "label": "Chiefs",
+        "accuracy": 0.2701,
+        "total_fans_in_cell": 1081,
+        "top_actual_team": "Kansas City Chiefs"
+      },
+      {
+        "cell_team": "Carolina Panthers",
+        "label": "Panthers",
+        "accuracy": 0.2689,
+        "total_fans_in_cell": 1086,
+        "top_actual_team": "Carolina Panthers"
+      },
+      {
+        "cell_team": "Dallas Cowboys",
+        "label": "Cowboys",
+        "accuracy": 0.2556,
+        "total_fans_in_cell": 716,
+        "top_actual_team": "Dallas Cowboys"
+      },
+      {
+        "cell_team": "Atlanta Falcons",
+        "label": "Falcons",
+        "accuracy": 0.2459,
+        "total_fans_in_cell": 671,
+        "top_actual_team": "Atlanta Falcons"
+      },
+      {
+        "cell_team": "Washington Commanders",
+        "label": "Commanders",
+        "accuracy": 0.2139,
+        "total_fans_in_cell": 1024,
+        "top_actual_team": "Washington Commanders"
+      },
+      {
+        "cell_team": "Tampa Bay Buccaneers",
+        "label": "Buccaneers",
+        "accuracy": 0.1909,
+        "total_fans_in_cell": 419,
+        "top_actual_team": "Tampa Bay Buccaneers"
+      },
+      {
+        "cell_team": "Tennessee Titans",
+        "label": "Titans",
+        "accuracy": 0.1788,
+        "total_fans_in_cell": 453,
+        "top_actual_team": "Tennessee Titans"
+      },
+      {
+        "cell_team": "Arizona Cardinals",
+        "label": "Cardinals",
+        "accuracy": 0.168,
+        "total_fans_in_cell": 500,
+        "top_actual_team": "Arizona Cardinals"
+      },
+      {
+        "cell_team": "Las Vegas Raiders",
+        "label": "Raiders",
+        "accuracy": 0.0774,
+        "total_fans_in_cell": 659,
+        "top_actual_team": "Green Bay Packers"
+      }
+    ]
+  },
+  "rust": {
+    "metros": [
+      "Charlotte",
+      "Raleigh",
+      "Tampa",
+      "Orlando",
+      "Phoenix",
+      "Austin",
+      "Nashville",
+      "Atlanta",
+      "Dallas",
+      "Houston",
+      "Las Vegas",
+      "San Antonio",
+      "Jacksonville",
+      "Miami"
+    ],
+    "metro_totals": {
+      "Charlotte": 41,
+      "Raleigh": 46,
+      "Tampa": 28,
+      "Orlando": 39,
+      "Phoenix": 104,
+      "Austin": 39,
+      "Nashville": 26,
+      "Atlanta": 23,
+      "Dallas": 32,
+      "Houston": 28,
+      "Las Vegas": 31,
+      "San Antonio": 39,
+      "Jacksonville": 11,
+      "Miami": 11
+    },
+    "team_totals": {
+      "Pittsburgh Steelers": 86,
+      "Cleveland Browns": 22,
+      "Detroit Lions": 37,
+      "Chicago Bears": 52,
+      "Buffalo Bills": 91,
+      "Cincinnati Bengals": 24,
+      "Green Bay Packers": 160,
+      "Minnesota Vikings": 26
+    },
+    "matrix": {
+      "Pittsburgh Steelers": {
+        "Charlotte": 9,
+        "Raleigh": 10,
+        "Tampa": 4,
+        "Orlando": 10,
+        "Phoenix": 14,
+        "Austin": 6,
+        "Nashville": 5,
+        "Atlanta": 3,
+        "Dallas": 3,
+        "Houston": 6,
+        "Las Vegas": 4,
+        "San Antonio": 6,
+        "Jacksonville": 3,
+        "Miami": 3
+      },
+      "Cleveland Browns": {
+        "Charlotte": 2,
+        "Raleigh": 1,
+        "Tampa": 1,
+        "Orlando": 2,
+        "Phoenix": 4,
+        "Austin": 2,
+        "Nashville": 1,
+        "Atlanta": 2,
+        "Dallas": 2,
+        "Houston": 0,
+        "Las Vegas": 1,
+        "San Antonio": 3,
+        "Jacksonville": 1,
+        "Miami": 0
+      },
+      "Detroit Lions": {
+        "Charlotte": 1,
+        "Raleigh": 1,
+        "Tampa": 2,
+        "Orlando": 5,
+        "Phoenix": 7,
+        "Austin": 2,
+        "Nashville": 4,
+        "Atlanta": 2,
+        "Dallas": 0,
+        "Houston": 3,
+        "Las Vegas": 3,
+        "San Antonio": 4,
+        "Jacksonville": 3,
+        "Miami": 0
+      },
+      "Chicago Bears": {
+        "Charlotte": 3,
+        "Raleigh": 4,
+        "Tampa": 2,
+        "Orlando": 2,
+        "Phoenix": 11,
+        "Austin": 6,
+        "Nashville": 4,
+        "Atlanta": 3,
+        "Dallas": 6,
+        "Houston": 2,
+        "Las Vegas": 3,
+        "San Antonio": 5,
+        "Jacksonville": 0,
+        "Miami": 1
+      },
+      "Buffalo Bills": {
+        "Charlotte": 15,
+        "Raleigh": 15,
+        "Tampa": 10,
+        "Orlando": 9,
+        "Phoenix": 11,
+        "Austin": 4,
+        "Nashville": 3,
+        "Atlanta": 6,
+        "Dallas": 2,
+        "Houston": 5,
+        "Las Vegas": 4,
+        "San Antonio": 4,
+        "Jacksonville": 0,
+        "Miami": 3
+      },
+      "Cincinnati Bengals": {
+        "Charlotte": 3,
+        "Raleigh": 3,
+        "Tampa": 1,
+        "Orlando": 1,
+        "Phoenix": 3,
+        "Austin": 1,
+        "Nashville": 2,
+        "Atlanta": 1,
+        "Dallas": 1,
+        "Houston": 2,
+        "Las Vegas": 0,
+        "San Antonio": 4,
+        "Jacksonville": 1,
+        "Miami": 1
+      },
+      "Green Bay Packers": {
+        "Charlotte": 8,
+        "Raleigh": 9,
+        "Tampa": 7,
+        "Orlando": 8,
+        "Phoenix": 44,
+        "Austin": 17,
+        "Nashville": 7,
+        "Atlanta": 6,
+        "Dallas": 15,
+        "Houston": 10,
+        "Las Vegas": 12,
+        "San Antonio": 12,
+        "Jacksonville": 2,
+        "Miami": 3
+      },
+      "Minnesota Vikings": {
+        "Charlotte": 0,
+        "Raleigh": 3,
+        "Tampa": 1,
+        "Orlando": 2,
+        "Phoenix": 10,
+        "Austin": 1,
+        "Nashville": 0,
+        "Atlanta": 0,
+        "Dallas": 3,
+        "Houston": 0,
+        "Las Vegas": 4,
+        "San Antonio": 1,
+        "Jacksonville": 1,
+        "Miami": 0
+      }
+    }
+  },
+  "lisa": {
+    "teams": [
+      "Buffalo Bills",
+      "Green Bay Packers",
+      "Pittsburgh Steelers",
+      "Seattle Seahawks",
+      "Dallas Cowboys",
+      "Philadelphia Eagles",
+      "Kansas City Chiefs",
+      "San Francisco 49ers"
+    ],
+    "significant": {
+      "Buffalo Bills": 146,
+      "Green Bay Packers": 149,
+      "Pittsburgh Steelers": 144,
+      "Seattle Seahawks": 128,
+      "Dallas Cowboys": 210,
+      "Philadelphia Eagles": 159,
+      "Kansas City Chiefs": 118,
+      "San Francisco 49ers": 161
+    }
+  }
+}

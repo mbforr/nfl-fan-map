@@ -9,12 +9,21 @@ from __future__ import annotations
 
 import math
 
+import geopandas as gpd
 import pandas as pd
+from shapely import make_valid
 
 import common as c
 
 MIN_RESPONSES = 50
 N_TEAMS = 32
+# Country polygons for the world choropleth. countries_world.geojson excludes
+# US/CA/MX (the pipeline handles those as sub-national tiers), so CA and MX are
+# dissolved from their province/state files; the US is intentionally excluded.
+WORLD = c.RAW_DATA / "countries_world.geojson"
+CA_SRC = c.RAW_DATA / "provinces_ca.geojson"
+MX_SRC = c.RAW_DATA / "states_mx.geojson"
+CTY_SIMPLIFY = 0.03   # deg — trims the detailed source polygons for the web map
 
 
 def main() -> None:
@@ -64,16 +73,44 @@ def main() -> None:
             log.info("%s: %d resp, top=%s (%d, %.1f%%)", cc, r["total"],
                      r["top_team"], r["top_count"], 100 * r["top_share"])
 
-    # Country-dominant polygon layer for Mapbox: the 92 simple country polygons
-    # (they already carry a_dominant). CA/MX/DE/AU/GB are sub-national only, so
-    # they're covered by the CSV rollup, not this polygon layer.
-    country_polys = regions[regions["level"] == "country"].copy()
+    # ----- Country-dominant polygon layer for Mapbox -----
+    # Every country with data gets a real country polygon (so CA/MX/GB/AU/DE
+    # show up, not just the "simple" countries). US is excluded on purpose.
+    world = gpd.read_file(WORLD)[["ISO_A2", "NAME", "geometry"]].rename(
+        columns={"ISO_A2": "country", "NAME": "region"})
+    # CA and MX aren't in countries_world → dissolve their sub-national files.
+    ca = gpd.read_file(CA_SRC).dissolve().assign(country="CA", region="Canada")[
+        ["country", "region", "geometry"]]
+    mx = gpd.read_file(MX_SRC).dissolve().assign(country="MX", region="Mexico")[
+        ["country", "region", "geometry"]]
+    polys = pd.concat([world, ca, mx], ignore_index=True)
+    polys = gpd.GeoDataFrame(polys, geometry="geometry", crs="EPSG:4326")
+
     rank = {cc: i + 1 for i, cc in enumerate(df["country"])}
-    country_polys["rank_by_total"] = country_polys["country"].map(rank)
-    div = df.set_index("country")["diversity_norm"].to_dict()
-    country_polys["diversity_norm"] = country_polys["country"].map(div)
+    info = df.set_index("country")
+    keep = []
+    for _, f in polys.iterrows():
+        cc = f["country"]
+        if cc == "US" or cc not in by_country:
+            continue
+        counts = by_country[cc]
+        total = sum(counts.values())
+        if total == 0:
+            continue
+        dom = max(counts, key=counts.get)
+        geom = make_valid(make_valid(f.geometry).simplify(CTY_SIMPLIFY)).buffer(0)
+        keep.append({
+            "region": f["region"], "country": cc, "level": "country",
+            "total": total, "a_total": total, "a_counts": counts,
+            "a_dominant": dom, "a_dominant_pct": round(counts[dom] / total, 4),
+            "rank_by_total": rank.get(cc),
+            "diversity_norm": float(info.loc[cc, "diversity_norm"]) if cc in info.index else None,
+            "geometry": geom,
+        })
+    country_polys = gpd.GeoDataFrame(keep, geometry="geometry", crs="EPSG:4326")
     c.write_geojson(country_polys, c.GEOJSON / "country_dominant.geojson", log)
-    log.info("note: CA/MX/DE/AU/GB are sub-national in outputs; see CSV for their rollups")
+    log.info("country choropleth: %d countries (US excluded); CA/MX/GB/AU/DE included",
+             len(country_polys))
 
 
 if __name__ == "__main__":
