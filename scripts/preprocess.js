@@ -411,7 +411,7 @@ const ES_SUBSTRING = [
   [/valencia|alicante|castello|alacant/, "ES.VC"],
   [/andaluc|andalus|malaga|sevill|cadiz|granada|cordoba|huelva|jaen|almeria/, "ES.AN"],
   [/galicia|coruna|pontevedra|ourense|orense|vigo|lugo/, "ES.GA"],
-  [/pais vasco|basque|euskadi|vizcaya|bizkaia|bilbao|guipuzcoa|gipuzkoa|donostia|alava|araba/, "ES.PV"],
+  [/pais vasc|basque|euskadi|euskal|vizcaya|bizkaia|bilbao|guipuzcoa|gipuzkoa|donostia|gasteiz|vitoria|alava|araba/, "ES.PV"],
   [/asturias|oviedo|gijon/, "ES.AS"],
   [/murcia|cartagena/, "ES.MU"],
   [/aragon|zaragoza|huesca|teruel/, "ES.AR"],
