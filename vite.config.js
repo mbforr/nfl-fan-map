@@ -10,6 +10,8 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, "index.html"),
         walkthrough: resolve(__dirname, "walkthrough.html"),
+        density: resolve(__dirname, "density.html"),
+        rustbelt: resolve(__dirname, "rustbelt.html"),
       },
     },
   },

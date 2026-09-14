@@ -11,6 +11,7 @@ new_data.csv
 new_data_*.csv
 data/responses.csv
 data/counties_us.geojson
+data/states_us.geojson
 data/provinces_ca.geojson
 data/states_mx.geojson
 data/states_de.geojson

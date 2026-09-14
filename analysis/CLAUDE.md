@@ -24,7 +24,7 @@ Plus the raw input the existing pipeline strips for storage efficiency:
 ## What this layer does NOT do
 
 - Does not modify `scripts/preprocess.js`, `scripts/seed-categories.py`, or any existing pipeline code.
-- Does not write to `public/data/`. Those files are committed to git and consumed by the runtime app.
+- Does not write to `public/data/`, **except the export tasks (14, 15)**, which write app-facing artifacts there (`story.json`, the story GeoJSONs, `county_lisa.json`). They never touch pipeline-owned files (`regions_*.geojson`, `totals.json`, `category_a.json`).
 - Does not modify `data/responses.csv` or any boundary GeoJSON in `data/`.
 - Does not re-geocode or re-join geography. The pipeline already did it. We use its outputs.
 

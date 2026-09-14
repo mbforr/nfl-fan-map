@@ -26,6 +26,7 @@ const OUT = path.join(ROOT, "public/data");
 const RESPONSES_PATH = path.join(DATA, "responses.csv");
 const CROSSWALK_PATH = path.join(DATA, "zip_county_crosswalk.txt");
 const COUNTIES_PATH = path.join(DATA, "counties_us.geojson");
+const STATES_US_PATH = path.join(DATA, "states_us.geojson");
 const PROVINCES_PATH = path.join(DATA, "provinces_ca.geojson");
 const DIVISIONS_CA_PATH = path.join(DATA, "divisions_ca.geojson");
 const STATES_PATH = path.join(DATA, "states_mx.geojson");
@@ -701,6 +702,38 @@ function ringArea(ring) {
   return s / 2;
 }
 
+// Geodesic ring area in m² (spherical excess — the same formula @turf/area uses).
+// ringArea() above is a planar shoelace in *square degrees*, which is fine for
+// picking the largest ring but meaningless as an area: a degree of longitude is
+// ~111 km at the equator and ~0 at the poles.
+function ringAreaGeodesic(ring) {
+  const R = 6378137;
+  const rad = (d) => (d * Math.PI) / 180;
+  let t = 0;
+  for (let i = 0, n = ring.length - 1; i < n; i++) {
+    const [x1, y1] = ring[i];
+    const [x2, y2] = ring[i + 1];
+    t += rad(x2 - x1) * (2 + Math.sin(rad(y1)) + Math.sin(rad(y2)));
+  }
+  return Math.abs((t * R * R) / 2);
+}
+
+// Polygon/MultiPolygon area in km²: outer ring minus its holes, summed over parts.
+function geometryAreaKm2(g) {
+  if (!g) return 0;
+  const polyArea = (rings) => {
+    if (!rings || !rings.length) return 0;
+    let a = ringAreaGeodesic(rings[0]);
+    for (let i = 1; i < rings.length; i++) a -= ringAreaGeodesic(rings[i]);
+    return Math.max(0, a);
+  };
+  let m2 = 0;
+  if (g.type === "Polygon") m2 = polyArea(g.coordinates);
+  else if (g.type === "MultiPolygon") for (const poly of g.coordinates) m2 += polyArea(poly);
+  else return 0;
+  return m2 / 1e6;
+}
+
 function ringCentroid(ring) {
   let cx = 0, cy = 0, a = 0;
   for (let i = 0, n = ring.length - 1; i < n; i++) {
@@ -1297,6 +1330,9 @@ function main() {
       country: agg.country,
       level: agg.level,
       total: agg.total,
+      // Measured on the raw GADM geometry, before the quantize/simplify below —
+      // area must not inherit the 0.005°–0.03° simplification error.
+      area_km2: Math.round(geometryAreaKm2(feature.geometry)),
       a_total: agg.a_total,
       a_counts: agg.a_counts,
       a_dominant: agg.a_dominant,
@@ -1401,6 +1437,104 @@ function main() {
       (LEVEL_PAINT_ORDER[b.properties.level] ?? 1),
   );
 
+  // ----- US state tier -----
+  // A SEPARATE collection, deliberately not merged into regions_polygons: 51
+  // state polygons dropped into that file would paint over the entire county
+  // choropleth (and LEVEL_PAINT_ORDER has no entry for them).
+  //
+  // Aggregated from the pre-join `aggregates` map rather than the emitted
+  // county features, so the state totals reconcile exactly to totals.json.
+  // Ten county FIPS never join GADM by name (nine Alaska census areas that
+  // GADM 4.1 predates, plus Oglala Lakota SD) — the state polygon still covers
+  // that ground, so their responses belong in the state count.
+  const stateBuckets = new Map(); // "04" → { total, a_counts }
+  let territoryTotal = 0; // PR (72), Guam (66), … — US rows with no state to sit in
+  for (const agg of aggregates.values()) {
+    if (agg.country !== "US" || agg.level !== "county") continue;
+    const fips = String(agg.id).slice(0, 2);
+    if (!FIPS_TO_STATE[fips]) { territoryTotal += agg.total; continue; }
+    let b = stateBuckets.get(fips);
+    if (!b) { b = { total: 0, a_counts: {} }; stateBuckets.set(fips, b); }
+    b.total += agg.total;
+    for (const [t, n] of Object.entries(agg.a_counts)) {
+      b.a_counts[t] = (b.a_counts[t] || 0) + n;
+    }
+  }
+
+  const statesSrc = readGeoJSON(STATES_US_PATH);
+  const gadmStateByKey = new Map();
+  for (const f of statesSrc.features) {
+    gadmStateByKey.set(stateKey(f.properties.NAME_1), f);
+  }
+
+  // State polygons are only ever viewed at national zoom, where a sub-2 km
+  // islet is well under a pixel. Alaska ships 4,151 parts (mostly Aleutian
+  // specks) and would be half the file on its own. Drop parts whose bbox
+  // diagonal is under 2× the simplify tolerance — comfortably below the
+  // Florida Keys (~7 km) and the Channel Islands (~35 km), which stay.
+  function dropTinyParts(geom, minDiagDeg) {
+    if (!geom || geom.type !== "MultiPolygon") return geom;
+    const kept = geom.coordinates.filter((poly) => {
+      const ring = poly[0];
+      if (!ring || ring.length < 4) return false;
+      let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+      for (const [x, y] of ring) {
+        if (x < x0) x0 = x; if (x > x1) x1 = x;
+        if (y < y0) y0 = y; if (y > y1) y1 = y;
+      }
+      return Math.hypot(x1 - x0, y1 - y0) >= minDiagDeg;
+    });
+    // Never return an empty geometry — keep the largest part as a floor.
+    if (!kept.length) {
+      let best = null, bestLen = -1;
+      for (const poly of geom.coordinates) {
+        if (poly[0] && poly[0].length > bestLen) { bestLen = poly[0].length; best = poly; }
+      }
+      return best ? { type: "MultiPolygon", coordinates: [best] } : geom;
+    }
+    return { type: "MultiPolygon", coordinates: kept };
+  }
+
+  const statePolys = { type: "FeatureCollection", features: [] };
+  let stateSum = 0;
+  for (const [fips, name] of Object.entries(FIPS_TO_STATE)) {
+    // stateKey() strips non-alphanumerics, so GADM's concatenated "NewYork" /
+    // "DistrictofColumbia" match without needing gadmStateName() — which is
+    // wrong for DC anyway ("Districtof Columbia": it only splits lower→upper).
+    const feature = gadmStateByKey.get(stateKey(name));
+    if (!feature) {
+      console.warn(`  WARN: no GADM L1 polygon for ${fips} ${name}`);
+      continue;
+    }
+    const b = stateBuckets.get(fips) || { total: 0, a_counts: {} };
+    const dom = dominantTeam(b.a_counts);
+    stateSum += b.total;
+    // Area and centroid come off the RAW geometry, before simplification.
+    const c = featureCentroid(feature);
+    statePolys.features.push({
+      type: "Feature",
+      geometry: dropTinyParts(quantizeGeometry(feature.geometry, 3, 0.01), 0.02),
+      properties: {
+        region: name,                 // alias of `name` so shared popup code works
+        name,
+        id: fips,                     // zero-padded 2-char string; county id.slice(0,2)
+        usps: STATE_FIPS_TO_USPS[fips],
+        country: "US",
+        level: "us_state",            // NOT "state" — MX already uses that
+        total: b.total,
+        area_km2: Math.round(geometryAreaKm2(feature.geometry)),
+        // Centroid of the largest ring: Alaska spans the antimeridian, so a
+        // bbox-based fitBounds would zoom to the whole planet. Ship a point.
+        cx: c ? c[0] : null,
+        cy: c ? c[1] : null,
+        a_total: b.total,
+        a_counts: b.a_counts,
+        a_dominant: dom.team,
+        a_dominant_pct: Number(dom.pct.toFixed(4)),
+      },
+    });
+  }
+
   // Sort totals
   const aTotals = Object.entries(teamCounts)
     .map(([short_name, count]) => ({ short_name, count }))
@@ -1435,6 +1569,7 @@ function main() {
 
   fs.writeFileSync(path.join(OUT, "regions_polygons.geojson"), JSON.stringify(polygons));
   fs.writeFileSync(path.join(OUT, "regions_centroids.geojson"), JSON.stringify(centroids));
+  fs.writeFileSync(path.join(OUT, "states_polygons.geojson"), JSON.stringify(statePolys));
   fs.writeFileSync(path.join(OUT, "totals.json"), JSON.stringify(totals, null, 2));
 
   console.log(`Preprocess complete.`);
@@ -1442,6 +1577,11 @@ function main() {
   console.log(`  skipped:`, skipped);
   console.log(`  recovered US (city+state / embedded zip):`, recovered);
   console.log(`  regions: ${uniqueRegions} (polygons: ${polygons.features.length}, centroids: ${centroids.features.length})`);
+  console.log(
+    `  us states: ${statePolys.features.length} features, sum ${stateSum}` +
+    ` + ${territoryTotal} territory (PR/GU/…) = ${stateSum + territoryTotal}` +
+    ` vs by_country.US ${byCountry.US || 0}`,
+  );
   console.log(`  unjoined aggregates: ${unjoined}`);
   if (unjoined && process.env.VERBOSE) {
     console.log("  unjoined keys:", unjoinedDetails.slice(0, 30));

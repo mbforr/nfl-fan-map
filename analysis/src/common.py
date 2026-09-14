@@ -170,10 +170,15 @@ def rollup_counts_by(regions: gpd.GeoDataFrame, key_fn) -> dict[str, dict]:
     return out
 
 
-def write_json(obj, path: Path, log: logging.Logger) -> None:
+def write_json(obj, path: Path, log: logging.Logger, indent: int | None = 2) -> None:
+    """indent=None writes compact JSON (no spaces) — for large app-facing payloads."""
     with open(path, "w") as f:
-        json.dump(obj, f, indent=2)
-    log.info("wrote %s", path.relative_to(REPO_ROOT))
+        if indent is None:
+            json.dump(obj, f, separators=(",", ":"))
+        else:
+            json.dump(obj, f, indent=indent)
+    log.info("wrote %s (%.1f KB)", path.relative_to(REPO_ROOT),
+             path.stat().st_size / 1024)
 
 
 def write_geojson(gdf: gpd.GeoDataFrame, path: Path, log: logging.Logger) -> None:

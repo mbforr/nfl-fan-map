@@ -7,6 +7,9 @@ export default function TeamDropdown({
   onSelect,
   label = "Team",
   placeholder = "Pick a team…",
+  // Optional extra stat rendered on each row, between the name and the count.
+  // (team) => ReactNode | null. Omitted by callers that just want the count.
+  renderMeta = null,
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -139,8 +142,11 @@ export default function TeamDropdown({
                       />
                       <span className="truncate">{t.short_name}</span>
                     </span>
-                    <span className="tabular-nums text-xs text-gray-500">
-                      {t.count.toLocaleString()}
+                    <span className="flex items-center gap-2 shrink-0">
+                      {renderMeta ? renderMeta(t) : null}
+                      <span className="tabular-nums text-xs text-gray-500">
+                        {t.count.toLocaleString()}
+                      </span>
                     </span>
                   </li>
                 ))

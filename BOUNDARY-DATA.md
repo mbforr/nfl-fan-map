@@ -106,7 +106,22 @@ CC_2                    census/local code ("NA" for US)
 ### GADM Level-1 files (state/province granularity)
 
 `provinces_ca.geojson`, `states_mx.geojson`, `states_de.geojson`,
-`states_au.geojson`, `states_es.geojson`, `nations_gb.geojson` — shared schema:
+`states_au.geojson`, `states_es.geojson`, `nations_gb.geojson`,
+`states_us.geojson` — shared schema:
+
+Manual fetch (same pattern as the other L1 tiers):
+
+```bash
+curl -L -o data/_raw/gadm41_USA_1.json.zip \
+  https://geodata.ucdavis.edu/gadm/gadm4.1/json/gadm41_USA_1.json.zip
+cd data/_raw && unzip -o gadm41_USA_1.json.zip && cd ../..
+cp data/_raw/gadm41_USA_1.json data/states_us.geojson
+```
+
+Offline fallback, if that URL ever rots: dissolve `counties_us.geojson` by `GID_1`
+in Python (geopandas), following the pattern in `analysis/src/04_voronoi.py`.
+It needs `make_valid()` per geometry first, and Alaska crosses the antimeridian
+so the dissolve breaks there — which is exactly why the download is preferred.
 
 | File | Features | Size | Serves |
 |---|---|---|---|
@@ -116,6 +131,7 @@ CC_2                    census/local code ("NA" for US)
 | `states_au.geojson` | 11 | 2.41 MB | AU states/territories |
 | `states_es.geojson` | 18 | 0.53 MB | ES autonomous communities (17 + Ceuta/Melilla), from `gadm41_ESP_1` |
 | `nations_gb.geojson` | 5 | 0.97 MB | GB constituent nations |
+| `states_us.geojson` | 51 | 5.31 MB | US states + DC, from `gadm41_USA_1`. Feeds the separate `states_polygons.geojson` output, NOT `regions_polygons` |
 
 **L1 property schema:**
 ```
@@ -165,6 +181,47 @@ Identical property sets; polygons are `MultiPolygon`, centroids are `Point`
 |---|---|---|---|
 | `regions_polygons.geojson` | 2,336 | 15.68 MB | MultiPolygon |
 | `regions_centroids.geojson` | 2,336 | 0.89 MB | Point |
+
+### `states_polygons.geojson` — the US state tier
+
+A **separate collection**, not part of `regions_polygons`: 51 state polygons
+dropped into that file would paint over the whole county choropleth (and
+`LEVEL_PAINT_ORDER` has no entry for them). Built by `scripts/preprocess.js` from
+`data/states_us.geojson` joined to county aggregates rolled up on `id.slice(0,2)`.
+
+| File | Features | Size | Geometry |
+|---|---|---|---|
+| `states_polygons.geojson` | 51 | 0.74 MB (202 KB gz) | MultiPolygon |
+
+Properties are the standard set plus `usps`, `name`, and `cx`/`cy`:
+
+```json
+{ "region": "Arizona", "name": "Arizona", "id": "04", "usps": "AZ",
+  "country": "US", "level": "us_state",        // NOT "state" — MX already uses that
+  "total": 607, "area_km2": 294207,
+  "cx": -111.66, "cy": 34.29,                  // label/flyTo point, see below
+  "a_total": 607, "a_counts": { "Arizona Cardinals": 103, "…": 0 },
+  "a_dominant": "Arizona Cardinals", "a_dominant_pct": 0.1697 }
+```
+
+Three things worth knowing:
+
+- **`id` is a zero-padded 2-char string.** It is the prefix of every county `id`,
+  which is what lets one Mapbox expression (`["slice", ["get","id"], 0, 2]`) serve
+  both the state and county sources.
+- **`cx`/`cy` exist because Alaska crosses the antimeridian.** Its bbox is
+  `[-180, 51, 180, 71]`, so a naive `fitBounds` on it zooms out to the whole
+  planet, and a polygon-placed label lands mid-Pacific. `featureCentroid()` picks
+  the largest ring, giving mainland AK (−152.7, 64.6).
+- **Totals reconcile to `totals.json` minus territories.** Aggregation runs over
+  the *pre-join* aggregates, so it keeps the ~10 counties whose Census names don't
+  exist in GADM 4.1 (nine Alaska census-area resplits + Oglala Lakota SD). Puerto
+  Rico and Guam have no state to sit in and are reported separately in the run log:
+  `33,697 + 64 territory = 33,761 = by_country.US`.
+
+Small parts (bbox diagonal < 2× the simplify tolerance) are pruned — Alaska drops
+from 4,151 parts to 870 — while the Florida Keys, Channel Islands and Hawaii's
+islands all survive. Area is measured on the raw geometry, before simplification.
 
 **Feature property schema:**
 ```json
