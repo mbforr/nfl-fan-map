@@ -161,12 +161,33 @@ Key columns: `GEOID_ZCTA5_20` (5-digit ZCTA), `GEOID_COUNTY_20` (5-digit county
 FIPS), `NAMELSAD_COUNTY_20` (e.g. "Baldwin County"). The pipeline maps
 ZIP → county FIPS → (state name, normalized county name) → GADM `NAME_1`+`NAME_2`.
 
-### `data/_raw/` (116 files)
+### `data/_raw/US_postal.txt` — ZIP centroids
+
+GeoNames **postal-code** dump, 41,490 rows, tab-delimited. Note this is a
+different file from the `US.txt` gazetteer already in `data/_raw/` — same
+filename upstream, different path, and only this one carries ZIPs:
+
+```bash
+curl -L -o /tmp/us_postal.zip https://download.geonames.org/export/zip/US.zip
+unzip -p /tmp/us_postal.zip US.txt > data/_raw/US_postal.txt
+```
+
+Columns used: `[1]` ZIP, `[2]` place name, `[4]` state USPS, `[9]` lat, `[10]` lng.
+A ZIP spanning several towns appears once per town; the first row wins.
+
+Read only by `scripts/h3-contest.js`, which needs a POINT per response — the
+county aggregates in `public/data/` have already discarded them. City centroids
+would have worked without this download, but every respondent in a city would
+collapse onto one coordinate, so Chicago would be a single point rather than
+~100 ZIPs spread across several hexagons.
+
+### `data/_raw/` (117 files)
 
 Original GADM `.json.zip` archives per country (`gadm41_AUS_1.json`, …) plus
 GeoNames city gazetteers `CA.txt` / `GB.txt` (used for England L2 point-in-polygon
-assignment). Provenance only — not read at runtime; the merged `data/*.geojson`
-files above are the working inputs. `download:boundaries` (re)builds them.
+assignment) and the postal file above. Provenance only — not read at runtime; the
+merged `data/*.geojson` files above are the working inputs. `download:boundaries`
+(re)builds the GADM archives.
 
 ---
 
@@ -281,6 +302,43 @@ priority, and the Counter panel.
 
 Top teams this run: Green Bay Packers (3,333), Buffalo Bills (1,969),
 Pittsburgh Steelers (1,627), Seattle Seahawks (1,373), Philadelphia Eagles (1,329).
+
+### `h3_contest.json` — contested-ground hexagons
+
+Built by `scripts/h3-contest.js` (`npm run h3:contest`, and part of `npm run
+data`). Drives [contested.html](contested.html). **US only**: everywhere else the
+survey resolves no finer than a province, and collapsing a province onto its
+centroid would invent hexagons that describe the centroid rather than the fans.
+
+36,445 of 39,115 US responses place at their ZIP centroid (2,439 have no ZIP,
+231 have a ZIP GeoNames doesn't know). Each is binned at H3 resolutions 3, 4 and
+5; the app ships all three so the size toggle is a repaint.
+
+```json
+{
+  "meta": { "teams": 32, "resolutions": [3,4,5], "min_n": 25, "keep_n": 5,
+            "us_rows": 39115, "placed": 36445,
+            "unplaced": { "no_zip": 2439, "unknown_zip": 231, "unknown_team": 0 } },
+  "resolutions": {
+    "4": { "area_km2": 1770, "edge_km": 26.1, "cells": [
+      { "h": "8429a41ffffffff", "n": 180, "label": "San Diego, CA", "places": 15,
+        "contest": 0.9293, "effective": 25.04, "distinct": 31,
+        "top_team": "Los Angeles Chargers", "top_share": 0.15, "lead": 0.0611,
+        "counts": { "Los Angeles Chargers": 27, ... } } ] }
+  }
+}
+```
+
+Cells below `keep_n` (5) are dropped; cells below `min_n` (25) ship with `n` and
+`label` only and render as context grey — the app's 25/50/100 threshold control
+filters on `n` from there.
+
+`contest` is Shannon entropy over the team mix divided by `ln(32)`, so 0 means
+one team owns the hexagon and 1 is a perfectly even 32-way split. `effective` is
+`e^H` — the number of teams the hexagon behaves like. Entropy carries a
+**Miller–Madow correction** (`+(K−1)/2n`): plug-in entropy is biased *downward*
+at small n, since 32 teams can't show up in 30 responses, which would otherwise
+hand "most uniform" to whichever hexagon happened to be smallest.
 
 ### `category_a.json`
 

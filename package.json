@@ -10,12 +10,14 @@
     "seed:categories": "python3 scripts/seed-categories.py",
     "download:boundaries": "node scripts/download-boundaries.js",
     "preprocess": "node scripts/preprocess.js",
-    "data": "npm run seed:categories && npm run preprocess",
+    "h3:contest": "node scripts/h3-contest.js",
+    "data": "npm run seed:categories && npm run preprocess && npm run h3:contest",
     "analysis:lisa": "python3 analysis/src/15_county_lisa.py --force",
     "data:full": "npm run data && npm run analysis:lisa"
   },
   "dependencies": {
     "@turf/great-circle": "^7.1.0",
+    "h3-js": "^4.5.0",
     "mapbox-gl": "^3.8.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

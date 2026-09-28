@@ -12,6 +12,7 @@ export default defineConfig({
         walkthrough: resolve(__dirname, "walkthrough.html"),
         density: resolve(__dirname, "density.html"),
         rustbelt: resolve(__dirname, "rustbelt.html"),
+        contested: resolve(__dirname, "contested.html"),
       },
     },
   },

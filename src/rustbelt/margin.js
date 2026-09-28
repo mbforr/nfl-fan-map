@@ -22,7 +22,9 @@ export const DIVERGING = [
 // midpoint and the map would say nothing. Square spacing expands the middle.
 export const STOPS_M = [-1, -0.5625, -0.25, -0.0625, 0, 0.0625, 0.25, 0.5625, 1];
 
-export const NO_HOME_COLOR = "#c96a2e"; // hatch ink
+// The 7 Sun Belt states with no NFL team sit off the ramp entirely, so they get
+// a hue the blue↔orange axis never produces — no reading of it implies a rank.
+export const NO_HOME_COLOR = "#7d5ba6";
 export const LOW_N_COLOR = "#d9d6cf";
 
 /**

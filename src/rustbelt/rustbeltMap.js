@@ -15,10 +15,10 @@ export const SOURCE_LABELS = "rbs-labels";
 
 export const L_COUNTY_FILL = "rbs-county-fill";
 export const L_COUNTY_LOWN = "rbs-county-lown";
-export const L_COUNTY_HATCH = "rbs-county-hatch";
+export const L_COUNTY_NOHOME = "rbs-county-nohome";
 export const L_COUNTY_LINE = "rbs-county-line";
 export const L_STATE_FILL = "rbs-state-fill";
-export const L_STATE_HATCH = "rbs-state-hatch";
+export const L_STATE_NOHOME = "rbs-state-nohome";
 export const L_STATE_LINE = "rbs-state-line";
 export const L_STATE_LABEL = "rbs-state-label";
 export const L_SELECT_STATE = "rbs-select-state";
@@ -26,7 +26,6 @@ export const L_SELECT_COUNTY = "rbs-select-county";
 
 const SLOT = "middle";
 const EMPTY_FC = { type: "FeatureCollection", features: [] };
-const HATCH_ID = "rbs-hatch";
 
 // --- expressions -----------------------------------------------------------
 
@@ -75,44 +74,9 @@ function rampExpr(measure) {
   return e;
 }
 
-// --- hatch pattern ---------------------------------------------------------
-
-/**
- * Diagonal hatch for the 7 Sun Belt states with no NFL team. They compute to a
- * margin of exactly +1, which on the ramp would paint Utah *more* Rust Belt
- * than Arizona — but Arizona won a contest and Utah never had one. A texture
- * keeps them legibly on the Rust Belt side without claiming a rank.
- *
- * NOTE: images added with addImage are destroyed by setStyle, so this must be
- * called again inside the basemap rebuild, before addRustBeltLayers.
- */
-export function ensureHatchImage(map) {
-  if (map.hasImage(HATCH_ID)) return;
-  const S = 16, r = 2;
-  const cv = document.createElement("canvas");
-  cv.width = cv.height = S * r;
-  const ctx = cv.getContext("2d");
-  ctx.scale(r, r);
-  ctx.fillStyle = "#faf6f1";
-  ctx.fillRect(0, 0, S, S);
-  ctx.strokeStyle = NO_HOME_COLOR;
-  ctx.lineWidth = 2.4;
-  ctx.beginPath();
-  for (let i = -S; i < S * 2; i += 8) {
-    ctx.moveTo(i, -2);
-    ctx.lineTo(i + S + 2, S + 2);
-  }
-  ctx.stroke();
-  const img = ctx.getImageData(0, 0, S * r, S * r);
-  map.addImage(HATCH_ID, { width: S * r, height: S * r, data: new Uint8Array(img.data) },
-    { pixelRatio: r });
-}
-
 // --- layers ----------------------------------------------------------------
 
 export function addRustBeltLayers(map, { states, counties }) {
-  ensureHatchImage(map); // must precede any fill-pattern layer
-
   const ensure = (id, data) => {
     if (map.getSource(id)) map.getSource(id).setData(data || EMPTY_FC);
     else map.addSource(id, { type: "geojson", data: data || EMPTY_FC, promoteId: "id" });
@@ -140,9 +104,9 @@ export function addRustBeltLayers(map, { states, counties }) {
     paint: { "fill-color": LOW_N_COLOR, "fill-opacity": 0.35 },
   });
   add({
-    id: L_COUNTY_HATCH, type: "fill", source: SOURCE_COUNTIES,
+    id: L_COUNTY_NOHOME, type: "fill", source: SOURCE_COUNTIES,
     layout: { visibility: "none" },
-    paint: { "fill-pattern": HATCH_ID, "fill-opacity": 0.9 },
+    paint: { "fill-color": NO_HOME_COLOR, "fill-opacity": 0.9 },
   });
   add({
     id: L_COUNTY_LINE, type: "line", source: SOURCE_COUNTIES,
@@ -158,8 +122,8 @@ export function addRustBeltLayers(map, { states, counties }) {
     },
   });
   add({
-    id: L_STATE_HATCH, type: "fill", source: SOURCE_STATES,
-    paint: { "fill-pattern": HATCH_ID, "fill-opacity": 0.9 },
+    id: L_STATE_NOHOME, type: "fill", source: SOURCE_STATES,
+    paint: { "fill-color": NO_HOME_COLOR, "fill-opacity": 0.9 },
   });
   // Deliberately visible in BOTH units: without the 16-state frame, a couple of
   // hundred shaded counties float in a blank continent.
@@ -213,14 +177,14 @@ export function applyMargin(map, { measure, showLowN }) {
 
   map.setPaintProperty(L_STATE_FILL, "fill-color", ramp);
   map.setFilter(L_STATE_FILL, scored);
-  map.setFilter(L_STATE_HATCH, ["all", SUN_BELT_FILTER, IS_NO_HOME]);
+  map.setFilter(L_STATE_NOHOME, ["all", SUN_BELT_FILTER, IS_NO_HOME]);
 
   map.setFilter(L_COUNTY_FILL, ["all", scored, [">=", n, MIN_N]]);
   map.setPaintProperty(L_COUNTY_FILL, "fill-color", ramp);
   map.setFilter(L_COUNTY_LOWN, ["all", scored, ["<", n, MIN_N]]);
   map.setPaintProperty(L_COUNTY_LOWN, "fill-color", showLowN ? ramp : LOW_N_COLOR);
   map.setPaintProperty(L_COUNTY_LOWN, "fill-opacity", showLowN ? 0.42 : 0.35);
-  map.setFilter(L_COUNTY_HATCH, ["all", SUN_BELT_FILTER, IS_NO_HOME]);
+  map.setFilter(L_COUNTY_NOHOME, ["all", SUN_BELT_FILTER, IS_NO_HOME]);
   map.setFilter(L_COUNTY_LINE, SUN_BELT_FILTER);
 
 }
@@ -249,8 +213,8 @@ export function applyUnit(map, unit) {
     if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", on ? "visible" : "none");
   };
   const c = unit === "counties";
-  vis(L_COUNTY_FILL, c); vis(L_COUNTY_LOWN, c); vis(L_COUNTY_HATCH, c); vis(L_COUNTY_LINE, c);
-  vis(L_STATE_FILL, !c); vis(L_STATE_HATCH, !c); vis(L_STATE_LABEL, !c);
+  vis(L_COUNTY_FILL, c); vis(L_COUNTY_LOWN, c); vis(L_COUNTY_NOHOME, c); vis(L_COUNTY_LINE, c);
+  vis(L_STATE_FILL, !c); vis(L_STATE_NOHOME, !c); vis(L_STATE_LABEL, !c);
   vis(L_STATE_LINE, true); // frame stays in both units
 }
 
@@ -346,7 +310,7 @@ function popupHTML(props, state) {
  * duplicates popups in src/App.jsx.
  */
 export function bindRustBeltInteractions(map, getState) {
-  const layers = [L_COUNTY_FILL, L_COUNTY_LOWN, L_COUNTY_HATCH, L_STATE_FILL, L_STATE_HATCH];
+  const layers = [L_COUNTY_FILL, L_COUNTY_LOWN, L_COUNTY_NOHOME, L_STATE_FILL, L_STATE_NOHOME];
   let popup = null;
   const bound = [];
   const on = (type, layer, fn) => { map.on(type, layer, fn); bound.push([type, layer, fn]); };

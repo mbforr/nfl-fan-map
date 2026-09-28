@@ -159,10 +159,7 @@ function StateList({ byFips, selectedFips, onSelectState }) {
     >
       <span className="w-6 shrink-0 text-[11px] font-medium">{s.usps}</span>
       {s.noHome ? (
-        <span className="h-2 flex-1 rounded" style={{
-          backgroundImage:
-            `repeating-linear-gradient(45deg, ${NO_HOME_COLOR} 0 2px, #faf6f1 2px 4px)`,
-        }} />
+        <span className="h-2 flex-1 rounded" style={{ background: NO_HOME_COLOR }} />
       ) : (
         // Centred diverging bar: grows left or right from a midline.
         <span className="relative h-2 flex-1 rounded bg-gray-100">

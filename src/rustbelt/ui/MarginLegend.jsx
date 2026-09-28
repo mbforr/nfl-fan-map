@@ -52,10 +52,7 @@ export default function MarginLegend({ unit, measureLabel, showLowN }) {
               <div className="flex items-center gap-2">
                 <span
                   className="inline-block h-3 w-3 rounded-sm shrink-0"
-                  style={{
-                    backgroundImage:
-                      `repeating-linear-gradient(45deg, ${NO_HOME_COLOR} 0 2px, #faf6f1 2px 4px)`,
-                  }}
+                  style={{ background: NO_HOME_COLOR }}
                 />
                 <span className="text-[11px] text-gray-600">
                   No NFL home team — no contest to score

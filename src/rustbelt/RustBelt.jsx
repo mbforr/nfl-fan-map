@@ -4,7 +4,7 @@ import { DEFAULT_BASEMAP } from "../config.js";
 import Counter from "../components/Counter.jsx";
 import {
   addRustBeltLayers, applyMargin, applySelection, applyUnit,
-  bindRustBeltInteractions, ensureHatchImage, setStateLabels, SOURCE_COUNTIES,
+  bindRustBeltInteractions, setStateLabels, SOURCE_COUNTIES,
 } from "./rustbeltMap.js";
 import { computeBelt, exportRates, DIVERGING } from "./margin.js";
 import { STATE_BY_FIPS } from "./constants.js";
@@ -156,9 +156,6 @@ export default function RustBelt() {
   useEffect(() => {
     if (!ready) return;
     setBasemap(mapRef.current, basemap, (m) => {
-      // addImage bitmaps do NOT survive setStyle — the hatch must be re-created
-      // before any fill-pattern layer is added back.
-      ensureHatchImage(m);
       addRustBeltLayers(m, dataRef.current);
       applyMargin(m, { measure, showLowN });
       setStateLabels(m, belt);

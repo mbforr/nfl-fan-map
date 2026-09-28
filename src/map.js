@@ -38,7 +38,27 @@ export function createMap(container) {
     projection: "globe",
   });
   map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "top-right");
+  // Fires on the initial style AND after every setStyle, and it was registered
+  // before any rebuild handler — so our own symbol layers are added after this
+  // has run and are never caught by the classic-style sweep below.
+  map.on("style.load", () => hideBasemapLabels(map));
   return map;
+}
+
+const LABEL_CONFIGS = [
+  "showPlaceLabels", "showRoadLabels", "showPointOfInterestLabels", "showTransitLabels",
+];
+
+/** Strip basemap text. Standard exposes config flags; classic styles do not. */
+function hideBasemapLabels(map) {
+  const style = map.getStyle();
+  if (style?.imports?.some((i) => i.id === "basemap")) {
+    for (const k of LABEL_CONFIGS) map.setConfigProperty("basemap", k, false);
+    return;
+  }
+  for (const l of style?.layers || []) {
+    if (l.type === "symbol") map.setLayoutProperty(l.id, "visibility", "none");
+  }
 }
 
 // ---------------------------------------------------------------------
