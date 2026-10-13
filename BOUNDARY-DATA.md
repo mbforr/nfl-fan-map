@@ -310,20 +310,20 @@ data`). Drives [contested.html](contested.html). **US only**: everywhere else th
 survey resolves no finer than a province, and collapsing a province onto its
 centroid would invent hexagons that describe the centroid rather than the fans.
 
-36,445 of 39,115 US responses place at their ZIP centroid (2,439 have no ZIP,
-231 have a ZIP GeoNames doesn't know). Each is binned at H3 resolutions 3, 4 and
+41,205 of 44,177 US responses place at their ZIP centroid (2,711 have no ZIP,
+261 have a ZIP GeoNames doesn't know). Each is binned at H3 resolutions 3, 4 and
 5; the app ships all three so the size toggle is a repaint.
 
 ```json
 {
   "meta": { "teams": 32, "resolutions": [3,4,5], "min_n": 25, "keep_n": 5,
-            "us_rows": 39115, "placed": 36445,
-            "unplaced": { "no_zip": 2439, "unknown_zip": 231, "unknown_team": 0 } },
+            "us_rows": 44177, "placed": 41205,
+            "unplaced": { "no_zip": 2711, "unknown_zip": 261, "unknown_team": 0 } },
   "resolutions": {
     "4": { "area_km2": 1770, "edge_km": 26.1, "cells": [
-      { "h": "8429a41ffffffff", "n": 180, "label": "San Diego, CA", "places": 15,
-        "contest": 0.9293, "effective": 25.04, "distinct": 31,
-        "top_team": "Los Angeles Chargers", "top_share": 0.15, "lead": 0.0611,
+      { "h": "8429a41ffffffff", "n": 201, "label": "San Diego, CA", "places": 15,
+        "contest": 0.925, "effective": 24.67, "distinct": 31,
+        "top_team": "Los Angeles Chargers", "top_share": 0.1343, "lead": 0.0448,
         "counts": { "Los Angeles Chargers": 27, ... } } ] }
   }
 }
